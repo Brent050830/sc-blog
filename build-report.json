@@ -424,5 +424,9 @@
       "title": "写在周末的闲话"
     }
   ],
-  "noise_samples": []
+  "noise_samples": [],
+  "seeyou_manifest": "D:\\17871\\shuchang\\blog-rebuild\\content\\seeyou-images.json",
+  "seeyou_pages_checked": 24,
+  "posts_with_recovered_images": 8,
+  "recovered_image_files": 8
 }

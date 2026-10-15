@@ -13,6 +13,12 @@
   })[char]);
 
   const articleUrl = (post) => `article.html?id=${encodeURIComponent(post.id)}`;
+  const postImages = (post) => Array.isArray(post.images) ? post.images : [];
+  const postStatus = (post) => {
+    const imageCount = postImages(post).length;
+    if (post.kind === "image-only") return imageCount ? `${imageCount} 张图片` : "原图待恢复";
+    return `${post.body_chars.toLocaleString("zh-CN")} 字${imageCount ? ` · ${imageCount} 图` : ""}`;
+  };
   const formatChineseDate = (date) => {
     const [year, month, day] = date.split("-");
     return `${year} 年 ${Number(month)} 月 ${Number(day)} 日`;
@@ -50,8 +56,8 @@
 
   function postCard(post, query) {
     const [year, month, day] = post.date.split("-");
-    const pending = post.kind === "image-only" ? '<span class="image-pending">原图待恢复</span>' : "";
-    const status = post.kind === "image-only" ? "图片帖" : `${post.body_chars.toLocaleString("zh-CN")} 字`;
+    const pending = post.kind === "image-only" && postImages(post).length === 0 ? '<span class="image-pending">原图待恢复</span>' : "";
+    const status = postStatus(post);
     return `
       <article class="post-card">
         <a class="post-cover" href="${articleUrl(post)}" style="--tone:${toneForYear(year)}" aria-label="阅读《${escapeHtml(post.title)}》">
@@ -180,16 +186,32 @@
     render();
   }
 
+  function renderPostImages(post, placement) {
+    const allImages = postImages(post);
+    const images = allImages.filter((image) => placement === "before" ? image.placement === "before" : image.placement !== "before");
+    return images.map((image, index) => {
+      const uncertain = image.placement === "inline-unresolved";
+      return `<figure class="archive-image" data-placement="${escapeHtml(image.placement)}">
+        <a class="archive-image-link" href="${escapeHtml(image.path)}" target="_blank" rel="noopener">
+          <img src="${escapeHtml(image.path)}" alt="${escapeHtml(image.alt)}" loading="lazy" decoding="async">
+        </a>
+        <figcaption><span>存档配图 ${image.ordinal || index + 1}/${allImages.length}${uncertain ? " · 原位置无法精确映射，按正文后附图" : ""}</span><a href="${escapeHtml(image.source_page)}" target="_blank" rel="noopener noreferrer">来源：seeyou.life 镜像</a></figcaption>
+      </figure>`;
+    }).join("");
+  }
+
   function makeBody(post) {
-    if (post.kind === "image-only") {
+    const images = postImages(post);
+    if (post.kind === "image-only" && images.length === 0) {
       return '<div class="missing-content"><span aria-hidden="true">□</span><h2>原图待恢复</h2><p>这是一篇纯图片博文，导出备份只留下标题与日期。找到可核实的历史快照后，图片会补回这里。</p></div>';
     }
-    return post.text.split(/\n{2,}/).filter(Boolean).map((block) => {
+    const text = post.text.split(/\n{2,}/).filter(Boolean).map((block) => {
       const trimmed = block.trim();
       const content = escapeHtml(trimmed).replace(/\n/g, "<br>");
       const isQuote = /^\[(?:匿名|新浪网友|网友)|^【|^“.*”$/.test(trimmed);
       return isQuote ? `<blockquote>${content}</blockquote>` : `<p>${content}</p>`;
     }).join("");
+    return `${renderPostImages(post, "before")}${text}${renderPostImages(post, "after")}`;
   }
 
   function navPost(element, post, label) {
@@ -213,13 +235,22 @@
     document.title = `${post.title}｜舒畅白小兔`;
     setText("crumb-title", post.title);
     setText("article-date", `${formatChineseDate(post.date)} · ${post.time.slice(0, 5)}`);
-    setText("article-status", post.kind === "image-only" ? "原图待恢复" : "本地原文");
+    const imageCount = postImages(post).length;
+    setText("article-status", post.kind === "image-only"
+      ? (imageCount ? "原图已恢复" : "原图待恢复")
+      : (imageCount ? `本地原文 · ${imageCount} 张配图` : "本地原文"));
     setText("article-title", post.title);
-    setText("article-lede", post.kind === "image-only" ? "原导出文件未保留图片内容。" : (post.excerpt.length < post.text.length ? `${post.excerpt}…` : post.excerpt));
+    setText("article-lede", post.kind === "image-only"
+      ? (imageCount ? "图片已由可核实的独立镜像恢复。" : "原导出文件未保留图片内容。")
+      : (post.excerpt.length < post.text.length ? `${post.excerpt}…` : post.excerpt));
     document.getElementById("article-body").innerHTML = makeBody(post);
-    setText("source-note-text", post.kind === "image-only"
-      ? `条目来自《${post.source_detail}》；导出文件只保留标题、日期和时间，尚未找到可核实原图。`
-      : `正文来自《${post.source_detail}》GBK 导出备份，仅整理换行，未改写原文。`);
+    if (imageCount) {
+      setText("source-note-text", `正文来自《${post.source_detail}》GBK 导出备份；${imageCount} 张配图来自已核实的 seeyou.life 文章镜像，现已下载到本站本地保存。`);
+    } else {
+      setText("source-note-text", post.kind === "image-only"
+        ? `条目来自《${post.source_detail}》；导出文件只保留标题、日期和时间，尚未找到可核实原图。`
+        : `正文来自《${post.source_detail}》GBK 导出备份，仅整理换行，未改写原文。`);
+    }
     setText("article-number", `#${String(post.n || post.sequence).padStart(3, "0")}`);
     setText("article-position", `全文第 ${post.sequence} 条 · ${post.date.slice(0, 4)} 年存档`);
     const sameYear = posts.filter((item) => item.id !== post.id && item.date.slice(0, 4) === post.date.slice(0, 4)).slice(0, 5);
@@ -238,7 +269,7 @@
     list.innerHTML = years.map((year) => `
       <section class="year-section" id="year-${year}">
         <header class="year-heading"><h2>${year}</h2><span>${groups[year].length} 篇</span></header>
-        <div>${groups[year].map((post) => `<article class="archive-row"><time datetime="${post.date}T${post.time}">${post.date.slice(5)} · ${post.time.slice(0, 5)}</time><a href="${articleUrl(post)}">${escapeHtml(post.title)}</a><span>${post.kind === "image-only" ? "原图待恢复" : `${post.body_chars} 字`}</span></article>`).join("")}</div>
+        <div>${groups[year].map((post) => `<article class="archive-row"><time datetime="${post.date}T${post.time}">${post.date.slice(5)} · ${post.time.slice(0, 5)}</time><a href="${articleUrl(post)}">${escapeHtml(post.title)}</a><span>${postStatus(post)}</span></article>`).join("")}</div>
       </section>`).join("");
     setText("archive-footer-count", `${posts.length} 个条目`);
   }
