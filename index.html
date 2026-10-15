@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="舒畅新浪博客文字存档，收录 2006 至 2013 年博文。">
+  <title>舒畅白小兔｜博客存档</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="home">
+  <a class="skip-link" href="#main">跳到正文</a>
+  <header class="site-header">
+    <div class="nav-shell">
+      <a class="brand" href="index.html" aria-label="返回首页">
+        <span class="brand-mark" aria-hidden="true">舒</span>
+        <span><strong>舒畅白小兔</strong><small>博客文字存档</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">菜单</button>
+      <nav id="site-nav" class="site-nav" aria-label="主导航">
+        <a class="is-current" href="index.html">文章</a>
+        <a href="archive.html">归档</a>
+        <a href="about.html">关于存档</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page-shell">
+    <section class="archive-hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">SINA BLOG ARCHIVE · 2006—2013</p>
+        <h1 id="hero-title">把散落在旧互联网里的文字，重新装订。</h1>
+        <p>以本地导出原文为底稿，按真实发表日期整理。时间不会倒流，但文字可以再次被读到。</p>
+      </div>
+      <div class="hero-stats" aria-label="存档统计">
+        <div><strong id="stat-posts">—</strong><span>篇文字</span></div>
+        <div><strong id="stat-years">—</strong><span>年跨度</span></div>
+        <div><strong id="stat-images">—</strong><span>篇原图待恢复</span></div>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="文章筛选">
+      <label class="search-box">
+        <span class="search-icon" aria-hidden="true"></span>
+        <span class="sr-only">搜索文章</span>
+        <input id="search-input" type="search" placeholder="搜索标题或正文，比如：建宁公主" autocomplete="off">
+        <kbd>⌘ K</kbd>
+      </label>
+      <label class="year-select">
+        <span>年份</span>
+        <select id="year-filter"><option value="all">全部年份</option></select>
+      </label>
+    </section>
+
+    <div class="content-layout">
+      <section class="posts-column" aria-live="polite">
+        <div class="section-heading">
+          <div><p class="eyebrow">ARCHIVE NOTES</p><h2 id="result-heading">从第一篇开始</h2></div>
+          <span id="result-count"></span>
+        </div>
+        <div id="post-list" class="post-list"></div>
+        <nav id="pagination" class="pagination" aria-label="文章分页"></nav>
+        <div id="empty-state" class="empty-state" hidden>
+          <span>没有找到</span>
+          <h2>换一个关键词试试吧</h2>
+          <button id="clear-search" class="text-button" type="button">清空筛选</button>
+        </div>
+      </section>
+      <aside class="sidebar" aria-label="博客侧栏">
+        <section class="side-card note-card">
+          <p class="eyebrow">关于这份存档</p>
+          <h2>原文优先，缺失留白</h2>
+          <p>正文来自新浪博客 GBK 导出文件。无法确认的图片与评论不会被猜测补写。</p>
+          <a class="arrow-link" href="about.html">查看整理说明 <span>→</span></a>
+        </section>
+        <section class="side-card">
+          <div class="side-title"><h2>最早文章</h2><a href="archive.html">全部</a></div>
+          <div id="recent-posts" class="recent-list"></div>
+        </section>
+        <section class="side-card">
+          <div class="side-title"><h2>年份</h2><span>共 8 年</span></div>
+          <div id="year-cloud" class="year-cloud"></div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="site-footer"><div><span>非官方公益文字存档</span><span>·</span><span>始于 2006 年夏天</span></div><a href="#main">回到顶部 ↑</a></footer>
+  <script src="assets/posts.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
