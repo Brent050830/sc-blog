@@ -14,7 +14,7 @@
   "last_date": "2014-05-12",
   "years": {
     "2006": 165,
-    "2007": 237,
+    "2007": 238,
     "2008": 59,
     "2009": 28,
     "2010": 19,
@@ -428,27 +428,27 @@
   "noise_samples": [],
   "seeyou_manifest": "D:\\17871\\shuchang\\blog-rebuild\\content\\seeyou-images.json",
   "seeyou_pages_checked": 24,
-  "posts_with_recovered_images": 163,
-  "recovered_image_files": 472,
-  "wayback_posts": 195,
-  "wayback_new_posts": 20,
+  "posts_with_recovered_images": 170,
+  "recovered_image_files": 485,
+  "wayback_posts": 206,
+  "wayback_new_posts": 21,
   "wayback_summary": {
-    "frozen_html_files": 195,
-    "article_pages": 195,
-    "page_shells": 0,
-    "matched_existing_posts": 175,
-    "new_posts": 20,
-    "verified_only_posts": 21,
-    "posts_with_image_references": 174,
-    "posts_with_saved_images": 157,
-    "body_image_references": 509,
-    "images_saved": 464,
-    "image_failures": 45,
-    "dynamic_comment_placeholders": 156,
+    "frozen_html_files": 207,
+    "article_pages": 206,
+    "page_shells": 1,
+    "matched_existing_posts": 185,
+    "new_posts": 21,
+    "verified_only_posts": 22,
+    "posts_with_image_references": 184,
+    "posts_with_saved_images": 164,
+    "body_image_references": 529,
+    "images_saved": 477,
+    "image_failures": 52,
+    "dynamic_comment_placeholders": 165,
     "posts_with_embedded_comment_excerpts": 4,
     "posts_with_confirmed_author_replies": 1
   },
-  "wayback_cutoff_utc": "2026-10-16T12:34:45.229463+00:00",
+  "wayback_cutoff_utc": "2026-10-16T13:19:10.114252+00:00",
   "wayback_image_failures": [
     {
       "post_id": "2006-09-01-2056-079",
@@ -461,6 +461,42 @@
       "wayback_id": "49aaa34301000c1p",
       "image_url": "http://s6.album.sina.com.cn/pic_3/49aaa34302001c35",
       "error": "图片下载失败：http://s6.album.sina.com.cn/pic_3/49aaa34302001c35（HTTP Error 404: Not Found）"
+    },
+    {
+      "post_id": "2008-08-22-1121-426",
+      "wayback_id": "49aaa3430100bde4",
+      "image_url": "http://static12.photo.sina.com.cn/middle/49aaa343t5503e8e1b68b&000",
+      "error": "图片下载失败：http://static12.photo.sina.com.cn/middle/49aaa343t5503e8e1b68b&000（HTTP Error 502: Bad Gateway）"
+    },
+    {
+      "post_id": "2008-08-22-1121-426",
+      "wayback_id": "49aaa3430100bde4",
+      "image_url": "http://static5.photo.sina.com.cn/middle/49aaa343t5503e8a49c74&000",
+      "error": "图片下载失败：http://static5.photo.sina.com.cn/middle/49aaa343t5503e8a49c74&000（HTTP Error 502: Bad Gateway）"
+    },
+    {
+      "post_id": "2008-08-22-1121-426",
+      "wayback_id": "49aaa3430100bde4",
+      "image_url": "http://static14.photo.sina.com.cn/middle/49aaa343t5503e876a92d&000",
+      "error": "图片下载失败：http://static14.photo.sina.com.cn/middle/49aaa343t5503e876a92d&000（HTTP Error 502: Bad Gateway）"
+    },
+    {
+      "post_id": "2008-08-22-1121-426",
+      "wayback_id": "49aaa3430100bde4",
+      "image_url": "http://static10.photo.sina.com.cn/middle/49aaa343t5503e848c039&000",
+      "error": "图片下载失败：http://static10.photo.sina.com.cn/middle/49aaa343t5503e848c039&000（HTTP Error 502: Bad Gateway）"
+    },
+    {
+      "post_id": "2008-08-26-2108-429",
+      "wayback_id": "49aaa3430100bfmx",
+      "image_url": "http://static13.photo.sina.com.cn/middle/49aaa343t555c98c6020c&000",
+      "error": "图片下载失败：http://static13.photo.sina.com.cn/middle/49aaa343t555c98c6020c&000（HTTP Error 502: Bad Gateway）"
+    },
+    {
+      "post_id": "2008-08-26-2108-429",
+      "wayback_id": "49aaa3430100bfmx",
+      "image_url": "http://static2.photo.sina.com.cn/middle/49aaa343t555c98797511&000",
+      "error": "图片下载失败：http://static2.photo.sina.com.cn/middle/49aaa343t555c98797511&000（HTTP Error 502: Bad Gateway）"
     },
     {
       "post_id": "2008-09-03-1141-430",
@@ -503,6 +539,12 @@
       "wayback_id": "49aaa3430100bxd1",
       "image_url": "http://static4.photo.sina.com.cn/middle/49aaa343t58be1eaa9813&000",
       "error": "图片下载失败：http://static4.photo.sina.com.cn/middle/49aaa343t58be1eaa9813&000（HTTP Error 502: Bad Gateway）"
+    },
+    {
+      "post_id": "2008-11-15-0105-444",
+      "wayback_id": "49aaa3430100ccm7",
+      "image_url": "http://static13.photo.sina.com.cn/middle/49aaa343t5ba936ed6cfc&000",
+      "error": "图片下载失败：http://static13.photo.sina.com.cn/middle/49aaa343t5ba936ed6cfc&000（HTTP Error 502: Bad Gateway）"
     },
     {
       "post_id": "2008-11-15-2221-445",
@@ -721,5 +763,5 @@
       "error": "图片下载失败：http://static2.photo.sina.com.cn/middle/49aaa343g82a1f15f4e91&690（HTTP Error 502: Bad Gateway）"
     }
   ],
-  "total_posts": 519
+  "total_posts": 520
 }
