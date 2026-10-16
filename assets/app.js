@@ -16,6 +16,7 @@
   const postImages = (post) => Array.isArray(post.images) ? post.images : [];
   const waybackLabel = (post) => post.wayback?.new_article ? "Wayback 补入" : post.wayback?.status === "verified" ? "Wayback 已核验" : "Wayback 部分恢复";
   const waybackBadge = (post) => post.wayback ? `<span class="wayback-badge">${waybackLabel(post)}</span>` : "";
+  const recoveryBadges = (post) => `${waybackBadge(post)}${post.supplemental?.new_article && post.supplemental.platform === "sohu" ? '<span class="supplemental-badge">搜狐博客补遗</span>' : ""}${post.supplemental?.new_article && !post.supplemental.complete ? '<span class="preview-badge">首页预览 · 不完整</span>' : ""}`;
   const postStatus = (post) => {
     const imageCount = postImages(post).length;
     if (post.kind === "image-only") return imageCount ? `${imageCount} 张图片` : "原图待恢复";
@@ -68,7 +69,7 @@
           ${pending}
         </a>
         <div class="post-content">
-          <div class="post-meta"><span class="pill">舒畅博客</span>${waybackBadge(post)}<span class="dot"></span><time datetime="${post.date}T${post.time}">${formatChineseDate(post.date)} · ${escapeHtml(post.time.slice(0, 5))}</time><span class="dot"></span><span>${status}</span></div>
+          <div class="post-meta"><span class="pill">舒畅博客</span>${recoveryBadges(post)}<span class="dot"></span><time datetime="${post.date}T${post.time}">${formatChineseDate(post.date)} · ${escapeHtml(post.time.slice(0, 5))}</time><span class="dot"></span><span>${status}</span></div>
           <h3><a href="${articleUrl(post)}">${escapeHtml(post.title)}</a></h3>
           <p class="post-excerpt">${highlightedExcerpt(post, query)}</p>
           <a class="read-link" href="${articleUrl(post)}">阅读全文 <span>→</span></a>
@@ -190,10 +191,10 @@
 
   function renderImage(image, index, total) {
       const positionNote = image.placement === "inline" ? " · 按历史正文位置近似还原" : image.placement === "inline-unresolved" ? " · 原位置无法精确映射，按正文后附图" : "";
-      const source = image.source_page.includes("web.archive.org/") ? "Wayback 历史页面" : "seeyou.life 镜像";
+      const source = image.path.startsWith("assets/images/supplemental/") ? image.source : image.source_page.includes("web.archive.org/") ? "Wayback 历史页面" : "seeyou.life 镜像";
       return `<figure class="archive-image" data-placement="${escapeHtml(image.placement)}">
         <a class="archive-image-link" href="${escapeHtml(image.path)}" target="_blank" rel="noopener">
-          <img src="${escapeHtml(image.path)}" alt="${escapeHtml(image.alt)}" loading="lazy" decoding="async">
+          <img src="${escapeHtml(image.path)}" alt="${escapeHtml(image.alt)}"${image.width && image.height ? ` width="${Number(image.width)}" height="${Number(image.height)}"` : ""} loading="lazy" decoding="async">
         </a>
         <figcaption><span>存档配图 ${index + 1}/${total}${positionNote}</span><a href="${escapeHtml(image.source_page)}" target="_blank" rel="noopener noreferrer">来源：${source}</a></figcaption>
       </figure>`;
@@ -240,9 +241,32 @@
     if (recovery.body_note) fields.push(recovery.body_note.replace(/。$/, ""));
     const comments = recovery.comments;
     const commentText = comments ? `正文保留博主整理的 ${comments.comment_excerpts} 条历史评论摘录${comments.author_reply_confirmed ? "，含舒畅本人回应" : ""}。这些摘录由作者写入正文。` : "";
-    const dynamicText = recovery.dynamic_comments === "placeholder-only" ? "快照中的动态评论区仅有加载占位，尚未恢复评论列表。" : "本页快照未保存可读取的独立评论列表。";
+    const dynamicText = post.supplemental?.historical_comments ? "另已从独立评论页恢复部分留言，见下方历史网友评论；不代表完整评论区。" : recovery.dynamic_comments === "placeholder-only" ? "快照中的动态评论区仅有加载占位，尚未恢复评论列表。" : "本页快照未保存可读取的独立评论列表。";
     element.hidden = false;
     element.innerHTML = `<h2>${waybackBadge(post)} 历史页面恢复记录</h2><p>${fields.join("；")}。</p><p><a href="${escapeHtml(recovery.snapshot_url)}" target="_blank" rel="noopener noreferrer">查看 Wayback 快照</a> · ${date}</p>${commentText ? `<p class="author-reply-note">${commentText}${comments.author_reply_confirmed ? ' <a href="#author-replies">阅读正文中的评论与回应 ↓</a>' : ""}</p>` : ""}<p>${dynamicText}</p>`;
+  }
+
+  function renderSupplemental(post) {
+    const recovery = post.supplemental;
+    const element = document.getElementById("supplemental-evidence");
+    if (!element) return;
+    const imageNote = post.quarantined_images?.length ? `<p class="incomplete-note">另有 ${post.quarantined_images.length} 个旧图片文件无法解码，已停止显示；原始文件与来源证据仍保留，不使用替代图片。</p>` : "";
+    if (!recovery) {
+      if (imageNote) { element.hidden=false; element.innerHTML=`<h2>图片校验记录</h2>${imageNote}`; }
+      return;
+    }
+    const providerNames = {"sina-article":"新浪旧版文章页", "sina-homepage":"新浪首页快照", "sina-rss":"新浪 RSS", "sina-comments":"新浪独立评论页", sohu:"搜狐博客存档"};
+    const sourceNote = source => source.complete ? "" : source.provider === "sina-homepage" ? " · 仅保存首页预览" : source.provider === "sina-comments" ? " · 部分历史评论" : " · 来源内容不完整";
+    const sources = recovery.sources.map(source => `<li><a href="${escapeHtml(source.snapshot_url)}" target="_blank" rel="noopener noreferrer">${providerNames[source.provider] || "历史来源"} · ${escapeHtml(source.title)}</a><small>原页时间：${escapeHtml(source.date)} ${escapeHtml(source.time.slice(0, 5))}${sourceNote(source)}</small></li>`).join("");
+    const variants = recovery.body_variants.map(variant => `<details class="source-variant"><summary>查看历史文字版本（未覆盖本地导出）</summary><p><a href="${escapeHtml(variant.source.snapshot_url)}" target="_blank" rel="noopener noreferrer">该版本来源</a></p><div class="variant-body">${escapeHtml(variant.text)}</div></details>`).join("");
+    element.hidden = false;
+    element.innerHTML = `<h2>本轮补漏与来源记录</h2>${recovery.platform === "sohu" && recovery.new_article ? "<p>搜狐博客补遗：日期与正文采用搜狐来源，尚未证明新浪也发布过这一篇。</p>" : "<p>原 TXT 标题、正文与既有链接保留；补充证据和配图单独关联。</p>"}${!recovery.complete ? '<p class="incomplete-note">此来源仅保存首页预览，不代表完整原文或全部图片。</p>' : ""}<p>本轮新增保存 ${recovery.images_added} 个配图资源${recovery.missing_images ? `；${recovery.missing_images} 个图片引用仍未能恢复` : ""}。正文图片可能包含原作者使用的表情。</p><details><summary>查看 ${recovery.sources.length} 条可追溯来源</summary><ul class="recovery-sources">${sources}</ul></details>${variants}`;
+    element.insertAdjacentHTML('beforeend',imageNote);
+    const comments = recovery.historical_comments;
+    if (!comments) return;
+    const target = document.getElementById("historical-comments");
+    target.hidden = false;
+    target.innerHTML = `<h2>历史网友评论</h2><p>从独立评论页恢复第 ${comments.page} 页共 ${comments.total_saved} 条，非完整评论区；未确认含舒畅本人回复。</p><p class="comment-privacy">${escapeHtml(comments.redaction_note)}</p><details><summary>展开 ${comments.total_saved} 条历史留言</summary><ol class="comment-list">${comments.items.map(comment => `<li class="historical-comment"><header><strong>${escapeHtml(comment.author)}</strong><time>${escapeHtml(comment.time)}</time></header><div>${escapeHtml(comment.text)}</div></li>`).join("")}</ol></details><p><a href="${escapeHtml(comments.snapshot_url)}" target="_blank" rel="noopener noreferrer">查看原评论页快照</a></p>`;
   }
 
   function navPost(element, post, label) {
@@ -267,17 +291,18 @@
     setText("crumb-title", post.title);
     setText("article-date", `${formatChineseDate(post.date)} · ${post.time.slice(0, 5)}`);
     const imageCount = postImages(post).length;
-    setText("article-status", post.kind === "image-only"
+    setText("article-status", post.supplemental?.new_article && !post.supplemental.complete ? "首页预览 · 不完整" : post.supplemental?.new_article && post.supplemental.platform === "sohu" ? "搜狐博客原文" : post.kind === "image-only"
       ? (imageCount ? "原图已恢复" : "原图待恢复")
       : `${post.wayback?.body_from_wayback ? "快照原文" : "本地原文"}${imageCount ? ` · ${imageCount} 张配图` : ""}`);
-    document.getElementById("article-status").insertAdjacentHTML("afterend", waybackBadge(post));
+    document.getElementById("article-status").insertAdjacentHTML("afterend", recoveryBadges(post));
     setText("article-title", post.title);
-    setText("article-lede", post.kind === "image-only"
+    setText("article-lede", post.supplemental?.new_article && !post.supplemental.complete ? "这是历史首页保留的部分预览，完整正文或全部图片尚未恢复。" : post.kind === "image-only"
       ? (imageCount ? "图片已由可核实的历史页面恢复，并在本站保存。" : "原导出文件未保留图片内容。")
       : (post.excerpt.length < post.text.length ? `${post.excerpt}…` : post.excerpt));
     document.getElementById("article-body").innerHTML = makeBody(post);
     renderWaybackEvidence(post);
-    const origin = post.wayback?.body_from_wayback ? "本条目的标题、日期与正文来自已核实的 Wayback 历史快照。" : post.kind === "image-only" ? `条目来自《${post.source_detail}》；导出文件只保留标题、日期和时间。` : `正文来自《${post.source_detail}》GBK 导出备份，仅整理换行，未改写原文。`;
+    renderSupplemental(post);
+    const origin = post.supplemental?.new_article && post.supplemental.platform === "sohu" ? "本条目来自舒畅搜狐博客的 RSS 历史快照；不是已核实的新浪转载。" : post.supplemental?.new_article && !post.supplemental.complete ? "本条目仅保留新浪首页快照中的预览，完整原页尚未恢复。" : post.wayback?.body_from_wayback ? "本条目的标题、日期与正文来自已核实的 Wayback 历史快照。" : post.kind === "image-only" ? `条目来自《${post.source_detail}》；导出文件只保留标题、日期和时间。` : `正文来自《${post.source_detail}》GBK 导出备份，仅整理换行，未改写原文。`;
     setText("source-note-text", `${origin}${imageCount ? ` ${imageCount} 张配图由各图下方标注的历史页面核实，已下载到本站保存。` : post.kind === "image-only" ? " 原图尚待恢复。" : ""}`);
     setText("article-number", `#${String(post.n || post.sequence).padStart(3, "0")}`);
     setText("article-position", `全文第 ${post.sequence} 条 · ${post.date.slice(0, 4)} 年存档`);
@@ -297,7 +322,7 @@
     list.innerHTML = years.map((year) => `
       <section class="year-section" id="year-${year}">
         <header class="year-heading"><h2>${year}</h2><span>${groups[year].length} 篇</span></header>
-        <div>${groups[year].map((post) => `<article class="archive-row"><time datetime="${post.date}T${post.time}">${post.date.slice(5)} · ${post.time.slice(0, 5)}</time><div class="archive-entry"><a href="${articleUrl(post)}">${escapeHtml(post.title)}</a>${waybackBadge(post)}</div><span>${postStatus(post)}</span></article>`).join("")}</div>
+        <div>${groups[year].map((post) => `<article class="archive-row"><time datetime="${post.date}T${post.time}">${post.date.slice(5)} · ${post.time.slice(0, 5)}</time><div class="archive-entry"><a href="${articleUrl(post)}">${escapeHtml(post.title)}</a>${recoveryBadges(post)}</div><span>${postStatus(post)}</span></article>`).join("")}</div>
       </section>`).join("");
     setText("archive-footer-count", `${posts.length} 个条目`);
   }

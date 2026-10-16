@@ -13,9 +13,9 @@
   "first_date": "2006-06-01",
   "last_date": "2014-05-12",
   "years": {
-    "2006": 165,
-    "2007": 238,
-    "2008": 59,
+    "2006": 170,
+    "2007": 242,
+    "2008": 60,
     "2009": 28,
     "2010": 19,
     "2011": 9,
@@ -428,9 +428,9 @@
   "noise_samples": [],
   "seeyou_manifest": "D:\\17871\\shuchang\\blog-rebuild\\content\\seeyou-images.json",
   "seeyou_pages_checked": 24,
-  "posts_with_recovered_images": 170,
-  "recovered_image_files": 485,
-  "wayback_posts": 206,
+  "posts_with_recovered_images": 256,
+  "recovered_image_files": 756,
+  "wayback_posts": 309,
   "wayback_new_posts": 21,
   "wayback_summary": {
     "frozen_html_files": 207,
@@ -763,5 +763,32 @@
       "error": "图片下载失败：http://static2.photo.sina.com.cn/middle/49aaa343g82a1f15f4e91&690（HTTP Error 502: Bad Gateway）"
     }
   ],
-  "total_posts": 520
+  "total_posts": 530,
+  "supplemental_summary": {
+    "pages": 193,
+    "matched_posts": 204,
+    "new_posts": 10,
+    "image_candidates": 519,
+    "images_saved": 322,
+    "comments_saved": 100,
+    "legacy_pages": 106,
+    "homepage_pages_with_articles": 63,
+    "images_added_to_site": 272
+  },
+  "supplemental_new_posts": 10,
+  "historical_comments": 100,
+  "homepage_audit": {
+    "status": "complete",
+    "index_records": 202,
+    "distinct_payloads": 70,
+    "processed": 70,
+    "saved": 70,
+    "failed": 0
+  },
+  "image_validation_failures": [
+    {
+      "post_id": "wayback-49aaa3430100069q",
+      "path": "assets/images/wayback/wayback-49aaa3430100069q/02-925999905cac.jpg"
+    }
+  ]
 }

@@ -275,3 +275,20 @@ kbd { padding: 2px 6px; border: 1px solid var(--line); border-radius: 5px; color
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
 }
+.supplemental-badge,.preview-badge{display:inline-block;padding:3px 8px;border-radius:5px;font-size:11px;line-height:1.5;background:#eaf1ed;color:#386452}
+.preview-badge{background:#fff0d9;color:#885b24}
+.recovery-sources{padding-left:20px;max-height:340px;overflow:auto}
+.recovery-sources li{margin:10px 0;overflow-wrap:anywhere}
+.recovery-sources small{display:block;color:var(--muted,#6c7d74);font-size:12px}
+.source-variant{margin-top:16px}
+.variant-body,.historical-comment>div{white-space:pre-wrap;overflow-wrap:anywhere}
+.variant-body{padding:16px;background:#f5f5ee;max-height:420px;overflow:auto}
+.incomplete-note{padding:12px;border-left:3px solid #bd8c47;background:#fff4df;color:#79511f}
+.historical-comments{margin-top:32px;border-top:1px solid #dbe3da;padding-top:22px;font-size:14px;line-height:1.8}
+.historical-comments h2{font-size:21px;margin:0 0 12px}
+.historical-comments summary,.wayback-evidence summary{cursor:pointer;color:#35654e;padding:8px 0}
+.comment-privacy{font-size:12px;color:#6c7d74}
+.comment-list{padding:0;list-style:none;max-height:650px;overflow:auto;overscroll-behavior:contain}
+.historical-comment{padding:16px 0;border-bottom:1px solid #e0e7dc}
+.historical-comment header{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:7px}
+.historical-comment time{font-size:11px;color:#6c7d74}
