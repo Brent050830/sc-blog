@@ -14,6 +14,8 @@
 
   const articleUrl = (post) => `article.html?id=${encodeURIComponent(post.id)}`;
   const postImages = (post) => Array.isArray(post.images) ? post.images : [];
+  const waybackLabel = (post) => post.wayback?.new_article ? "Wayback 补入" : post.wayback?.status === "verified" ? "Wayback 已核验" : "Wayback 部分恢复";
+  const waybackBadge = (post) => post.wayback ? `<span class="wayback-badge">${waybackLabel(post)}</span>` : "";
   const postStatus = (post) => {
     const imageCount = postImages(post).length;
     if (post.kind === "image-only") return imageCount ? `${imageCount} 张图片` : "原图待恢复";
@@ -66,7 +68,7 @@
           ${pending}
         </a>
         <div class="post-content">
-          <div class="post-meta"><span class="pill">舒畅博客</span><span class="dot"></span><time datetime="${post.date}T${post.time}">${formatChineseDate(post.date)} · ${escapeHtml(post.time.slice(0, 5))}</time><span class="dot"></span><span>${status}</span></div>
+          <div class="post-meta"><span class="pill">舒畅博客</span>${waybackBadge(post)}<span class="dot"></span><time datetime="${post.date}T${post.time}">${formatChineseDate(post.date)} · ${escapeHtml(post.time.slice(0, 5))}</time><span class="dot"></span><span>${status}</span></div>
           <h3><a href="${articleUrl(post)}">${escapeHtml(post.title)}</a></h3>
           <p class="post-excerpt">${highlightedExcerpt(post, query)}</p>
           <a class="read-link" href="${articleUrl(post)}">阅读全文 <span>→</span></a>
@@ -186,18 +188,15 @@
     render();
   }
 
-  function renderPostImages(post, placement) {
-    const allImages = postImages(post);
-    const images = allImages.filter((image) => placement === "before" ? image.placement === "before" : image.placement !== "before");
-    return images.map((image, index) => {
-      const uncertain = image.placement === "inline-unresolved";
+  function renderImage(image, index, total) {
+      const positionNote = image.placement === "inline" ? " · 按历史正文位置近似还原" : image.placement === "inline-unresolved" ? " · 原位置无法精确映射，按正文后附图" : "";
+      const source = image.source_page.includes("web.archive.org/") ? "Wayback 历史页面" : "seeyou.life 镜像";
       return `<figure class="archive-image" data-placement="${escapeHtml(image.placement)}">
         <a class="archive-image-link" href="${escapeHtml(image.path)}" target="_blank" rel="noopener">
           <img src="${escapeHtml(image.path)}" alt="${escapeHtml(image.alt)}" loading="lazy" decoding="async">
         </a>
-        <figcaption><span>存档配图 ${image.ordinal || index + 1}/${allImages.length}${uncertain ? " · 原位置无法精确映射，按正文后附图" : ""}</span><a href="${escapeHtml(image.source_page)}" target="_blank" rel="noopener noreferrer">来源：seeyou.life 镜像</a></figcaption>
+        <figcaption><span>存档配图 ${index + 1}/${total}${positionNote}</span><a href="${escapeHtml(image.source_page)}" target="_blank" rel="noopener noreferrer">来源：${source}</a></figcaption>
       </figure>`;
-    }).join("");
   }
 
   function makeBody(post) {
@@ -205,13 +204,44 @@
     if (post.kind === "image-only" && images.length === 0) {
       return '<div class="missing-content"><span aria-hidden="true">□</span><h2>原图待恢复</h2><p>这是一篇纯图片博文，导出备份只留下标题与日期。找到可核实的历史快照后，图片会补回这里。</p></div>';
     }
-    const text = post.text.split(/\n{2,}/).filter(Boolean).map((block) => {
+    const blocks = post.text.split(/\n{2,}/).filter(Boolean);
+    const positions = [0];
+    blocks.forEach((block) => positions.push(positions.at(-1) + (block.normalize("NFKC").match(/[\p{L}\p{N}]/gu) || []).length));
+    const slots = Array.from({ length: blocks.length + 1 }, () => []);
+    images.forEach((image, index) => {
+      let slot = image.placement === "before" ? 0 : blocks.length;
+      if (image.placement === "inline") {
+        const target = Math.max(0, Math.min(1, image.body_position_ratio)) * positions.at(-1);
+        slot = positions.reduce((best, value, current) => Math.abs(value - target) < Math.abs(positions[best] - target) ? current : best, 0);
+      }
+      slots[slot].push(renderImage(image, index, images.length));
+    });
+    let markedReplies = false;
+    const text = blocks.map((block, index) => {
       const trimmed = block.trim();
       const content = escapeHtml(trimmed).replace(/\n/g, "<br>");
       const isQuote = /^\[(?:匿名|新浪网友|网友)|^【|^“.*”$/.test(trimmed);
-      return isQuote ? `<blockquote>${content}</blockquote>` : `<p>${content}</p>`;
+      const replyAnchor = isQuote && !markedReplies && post.wayback?.comments?.author_reply_confirmed;
+      if (replyAnchor) markedReplies = true;
+      return `${slots[index].join("")}${isQuote ? `<blockquote${replyAnchor ? ' id="author-replies"' : ""}>${content}</blockquote>` : `<p>${content}</p>`}`;
     }).join("");
-    return `${renderPostImages(post, "before")}${text}${renderPostImages(post, "after")}`;
+    return `${text}${slots.at(-1).join("")}`;
+  }
+
+  function renderWaybackEvidence(post) {
+    const recovery = post.wayback;
+    const element = document.getElementById("wayback-evidence");
+    if (!recovery || !element) return;
+    const timestamp = recovery.snapshot_timestamp;
+    const date = timestamp.length === 14 ? `${timestamp.slice(0, 4)}-${timestamp.slice(4, 6)}-${timestamp.slice(6, 8)} ${timestamp.slice(8, 10)}:${timestamp.slice(10, 12)}:${timestamp.slice(12, 14)} UTC` : "历史快照";
+    const fields = [recovery.body_from_wayback ? "正文由历史快照补入" : "标题、日期与本地原文已交叉核验"];
+    if (recovery.recovered_image_count) fields.push(`恢复 ${recovery.recovered_image_count} 张正文图片`);
+    if (recovery.missing_image_count) fields.push(`${recovery.missing_image_count} 个原图引用仍失效`);
+    const comments = recovery.comments;
+    const commentText = comments ? `正文保留博主整理的 ${comments.comment_excerpts} 条历史评论摘录${comments.author_reply_confirmed ? "，含舒畅本人回应" : ""}。这些摘录由作者写入正文。` : "";
+    const dynamicText = recovery.dynamic_comments === "placeholder-only" ? "快照中的动态评论区仅有加载占位，尚未恢复评论列表。" : "本页快照未保存可读取的独立评论列表。";
+    element.hidden = false;
+    element.innerHTML = `<h2>${waybackBadge(post)} 历史页面恢复记录</h2><p>${fields.join("；")}。</p><p><a href="${escapeHtml(recovery.snapshot_url)}" target="_blank" rel="noopener noreferrer">查看 Wayback 快照</a> · ${date}</p>${commentText ? `<p class="author-reply-note">${commentText}${comments.author_reply_confirmed ? ' <a href="#author-replies">阅读正文中的评论与回应 ↓</a>' : ""}</p>` : ""}<p>${dynamicText}</p>`;
   }
 
   function navPost(element, post, label) {
@@ -238,19 +268,16 @@
     const imageCount = postImages(post).length;
     setText("article-status", post.kind === "image-only"
       ? (imageCount ? "原图已恢复" : "原图待恢复")
-      : (imageCount ? `本地原文 · ${imageCount} 张配图` : "本地原文"));
+      : `${post.wayback?.body_from_wayback ? "快照原文" : "本地原文"}${imageCount ? ` · ${imageCount} 张配图` : ""}`);
+    document.getElementById("article-status").insertAdjacentHTML("afterend", waybackBadge(post));
     setText("article-title", post.title);
     setText("article-lede", post.kind === "image-only"
-      ? (imageCount ? "图片已由可核实的独立镜像恢复。" : "原导出文件未保留图片内容。")
+      ? (imageCount ? "图片已由可核实的历史页面恢复，并在本站保存。" : "原导出文件未保留图片内容。")
       : (post.excerpt.length < post.text.length ? `${post.excerpt}…` : post.excerpt));
     document.getElementById("article-body").innerHTML = makeBody(post);
-    if (imageCount) {
-      setText("source-note-text", `正文来自《${post.source_detail}》GBK 导出备份；${imageCount} 张配图来自已核实的 seeyou.life 文章镜像，现已下载到本站本地保存。`);
-    } else {
-      setText("source-note-text", post.kind === "image-only"
-        ? `条目来自《${post.source_detail}》；导出文件只保留标题、日期和时间，尚未找到可核实原图。`
-        : `正文来自《${post.source_detail}》GBK 导出备份，仅整理换行，未改写原文。`);
-    }
+    renderWaybackEvidence(post);
+    const origin = post.wayback?.body_from_wayback ? "本条目的标题、日期与正文来自已核实的 Wayback 历史快照。" : post.kind === "image-only" ? `条目来自《${post.source_detail}》；导出文件只保留标题、日期和时间。` : `正文来自《${post.source_detail}》GBK 导出备份，仅整理换行，未改写原文。`;
+    setText("source-note-text", `${origin}${imageCount ? ` ${imageCount} 张配图由各图下方标注的历史页面核实，已下载到本站保存。` : post.kind === "image-only" ? " 原图尚待恢复。" : ""}`);
     setText("article-number", `#${String(post.n || post.sequence).padStart(3, "0")}`);
     setText("article-position", `全文第 ${post.sequence} 条 · ${post.date.slice(0, 4)} 年存档`);
     const sameYear = posts.filter((item) => item.id !== post.id && item.date.slice(0, 4) === post.date.slice(0, 4)).slice(0, 5);
@@ -269,14 +296,15 @@
     list.innerHTML = years.map((year) => `
       <section class="year-section" id="year-${year}">
         <header class="year-heading"><h2>${year}</h2><span>${groups[year].length} 篇</span></header>
-        <div>${groups[year].map((post) => `<article class="archive-row"><time datetime="${post.date}T${post.time}">${post.date.slice(5)} · ${post.time.slice(0, 5)}</time><a href="${articleUrl(post)}">${escapeHtml(post.title)}</a><span>${postStatus(post)}</span></article>`).join("")}</div>
+        <div>${groups[year].map((post) => `<article class="archive-row"><time datetime="${post.date}T${post.time}">${post.date.slice(5)} · ${post.time.slice(0, 5)}</time><div class="archive-entry"><a href="${articleUrl(post)}">${escapeHtml(post.title)}</a>${waybackBadge(post)}</div><span>${postStatus(post)}</span></article>`).join("")}</div>
       </section>`).join("");
     setText("archive-footer-count", `${posts.length} 个条目`);
   }
 
   function aboutPage() {
     setText("about-text-count", `${data.site.text_count} 篇`);
-    setText("about-image-count", `${data.site.image_only_count} 篇`);
+    setText("about-image-count", `${posts.filter((post) => post.kind === "image-only" && !postImages(post).length).length} 篇`);
+    setText("about-wayback-count", `${data.site.wayback_count || 0} 篇`);
     setText("about-date-range", `${data.site.first_date} — ${data.site.last_date}`);
   }
 

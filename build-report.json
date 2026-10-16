@@ -11,15 +11,16 @@
     101
   ],
   "first_date": "2006-06-01",
-  "last_date": "2013-02-10",
+  "last_date": "2014-05-12",
   "years": {
     "2006": 164,
     "2007": 234,
     "2008": 53,
     "2009": 24,
-    "2010": 16,
-    "2011": 7,
-    "2013": 1
+    "2010": 18,
+    "2011": 9,
+    "2013": 1,
+    "2014": 1
   },
   "image_only": [
     {
@@ -427,6 +428,46 @@
   "noise_samples": [],
   "seeyou_manifest": "D:\\17871\\shuchang\\blog-rebuild\\content\\seeyou-images.json",
   "seeyou_pages_checked": 24,
-  "posts_with_recovered_images": 8,
-  "recovered_image_files": 8
+  "posts_with_recovered_images": 75,
+  "recovered_image_files": 228,
+  "wayback_posts": 76,
+  "wayback_new_posts": 5,
+  "wayback_summary": {
+    "frozen_html_files": 83,
+    "article_pages": 76,
+    "page_shells": 7,
+    "matched_existing_posts": 71,
+    "new_posts": 5,
+    "verified_only_posts": 6,
+    "posts_with_image_references": 70,
+    "posts_with_saved_images": 68,
+    "body_image_references": 223,
+    "images_saved": 220,
+    "image_failures": 3,
+    "dynamic_comment_placeholders": 75,
+    "posts_with_embedded_comment_excerpts": 1,
+    "posts_with_confirmed_author_replies": 1
+  },
+  "wayback_cutoff_utc": "2026-10-15T15:21:45.9580541Z",
+  "wayback_image_failures": [
+    {
+      "post_id": "2007-03-19-2019-237",
+      "wayback_id": "49aaa3430100091l",
+      "image_url": "http://s13.sinaimg.cn/orignal/49aaa3430ddff603e937c",
+      "error": "图片下载失败：http://s13.sinaimg.cn/orignal/49aaa3430ddff603e937c（HTTP Error 404: Not Found）"
+    },
+    {
+      "post_id": "2008-09-07-2234-432",
+      "wayback_id": "49aaa3430100bjyl",
+      "image_url": "http://static11.photo.sina.com.cn/middle/49aaa343t564f47f79d8a&000",
+      "error": "图片下载失败：http://static11.photo.sina.com.cn/middle/49aaa343t564f47f79d8a&000（HTTP Error 502: Bad Gateway）"
+    },
+    {
+      "post_id": "2011-01-22-0044-492",
+      "wayback_id": "49aaa34301017wh0",
+      "image_url": "http://s14.sinaimg.cn/middle/49aaa343t9a5de5c5415d&690",
+      "error": "图片下载失败：http://s14.sinaimg.cn/middle/49aaa343t9a5de5c5415d&690（HTTP Error 404: Not Found）"
+    }
+  ],
+  "total_posts": 504
 }

@@ -92,6 +92,15 @@ kbd { padding: 2px 6px; border: 1px solid var(--line); border-radius: 5px; color
 .post-content { padding: 30px 34px 26px; display: flex; flex-direction: column; }
 .post-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; color: var(--muted); font-size: 11px; }
 .pill { display: inline-flex; padding: 3px 9px; border-radius: 30px; color: var(--green-dark); background: var(--green-pale); font-weight: 600; }
+.wayback-badge { display: inline-flex; align-items: center; padding: 2px 8px; border: 1px solid #c8d9d3; border-radius: 5px; color: var(--green-dark); background: #eef5ef; font: 600 10px/1.6 var(--sans); white-space: nowrap; }
+.archive-entry { min-width: 0; display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 10px; }
+.archive-entry .wayback-badge { color: var(--green-dark); }
+.wayback-evidence { margin-top: 36px; padding: 22px; border: 1px solid var(--line); border-radius: 11px; background: #f0f5ef; overflow-wrap: anywhere; }
+.wayback-evidence h2 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; font: 600 16px/1.6 var(--serif); }
+.wayback-evidence p { margin: 8px 0 0; color: #546a63; font: 12px/1.9 var(--sans); }
+.wayback-evidence a { color: var(--green-dark); text-decoration: underline; text-underline-offset: 3px; }
+.wayback-evidence .author-reply-note { margin-top: 15px; padding-top: 13px; border-top: 1px solid var(--line); color: var(--green-dark); }
+#author-replies { scroll-margin-top: 24px; }
 .dot { width: 3px; height: 3px; border-radius: 50%; background: #a6b2ae; }
 .post-content h3 { margin: 13px 0 11px; font: 700 24px/1.42 var(--serif); }
 .post-content h3 a { background: linear-gradient(var(--green), var(--green)) 0 100% / 0 1px no-repeat; transition: background-size .25s; }
