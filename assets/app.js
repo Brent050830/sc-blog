@@ -110,7 +110,7 @@
     const perPage = 8;
 
     setText("stat-posts", data.site.text_count);
-    setText("stat-images", data.site.image_only_count);
+    setText("stat-images", posts.filter((post) => post.kind === "image-only" && !postImages(post).length).length);
     setText("stat-years", Number(data.site.last_date.slice(0, 4)) - Number(data.site.first_date.slice(0, 4)) + 1);
     input.value = state.query;
     yearFilter.innerHTML += years.map((year) => `<option value="${year}">${year} 年</option>`).join("");
@@ -237,6 +237,7 @@
     const fields = [recovery.body_from_wayback ? "正文由历史快照补入" : "标题、日期与本地原文已交叉核验"];
     if (recovery.recovered_image_count) fields.push(`恢复 ${recovery.recovered_image_count} 张正文图片`);
     if (recovery.missing_image_count) fields.push(`${recovery.missing_image_count} 个原图引用仍失效`);
+    if (recovery.body_note) fields.push(recovery.body_note.replace(/。$/, ""));
     const comments = recovery.comments;
     const commentText = comments ? `正文保留博主整理的 ${comments.comment_excerpts} 条历史评论摘录${comments.author_reply_confirmed ? "，含舒畅本人回应" : ""}。这些摘录由作者写入正文。` : "";
     const dynamicText = recovery.dynamic_comments === "placeholder-only" ? "快照中的动态评论区仅有加载占位，尚未恢复评论列表。" : "本页快照未保存可读取的独立评论列表。";
