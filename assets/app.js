@@ -192,12 +192,12 @@
 
   function renderImage(image, index, total) {
       const positionNote = image.placement === "inline" ? " · 按历史正文位置近似还原" : image.placement === "inline-unresolved" ? " · 原位置无法精确映射，按正文后附图" : "";
-      const source = image.path.startsWith("assets/images/supplemental/") ? image.source : image.source_page.includes("web.archive.org/") ? "Wayback 历史页面" : "seeyou.life 镜像";
+      const source = image.path.startsWith("assets/images/supplemental/") || image.path.startsWith("assets/images/recovered/") ? image.source : image.source_page.includes("web.archive.org/") ? "Wayback 历史页面" : "seeyou.life 镜像";
       return `<figure class="archive-image" data-placement="${escapeHtml(image.placement)}">
         <a class="archive-image-link" href="${escapeHtml(image.path)}" target="_blank" rel="noopener">
           <img src="${escapeHtml(image.path)}" alt="${escapeHtml(image.alt)}"${image.width && image.height ? ` width="${Number(image.width)}" height="${Number(image.height)}"` : ""} loading="lazy" decoding="async">
         </a>
-        <figcaption><span>存档配图 ${index + 1}/${total}${positionNote}</span><a href="${escapeHtml(image.source_page)}" target="_blank" rel="noopener noreferrer">来源：${source}</a></figcaption>
+        <figcaption><span>存档配图 ${index + 1}/${total}${positionNote}</span><a href="${escapeHtml(image.source_page)}" target="_blank" rel="noopener noreferrer">来源：${escapeHtml(source)}</a></figcaption>
       </figure>`;
   }
 

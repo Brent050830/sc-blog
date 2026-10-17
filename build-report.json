@@ -429,7 +429,7 @@
   "seeyou_manifest": "D:\\17871\\shuchang\\blog-rebuild\\content\\seeyou-images.json",
   "seeyou_pages_checked": 24,
   "posts_with_recovered_images": 256,
-  "recovered_image_files": 756,
+  "recovered_image_files": 759,
   "wayback_posts": 309,
   "wayback_new_posts": 21,
   "wayback_summary": {
@@ -450,18 +450,6 @@
   },
   "wayback_cutoff_utc": "2026-10-16T13:19:10.114252+00:00",
   "wayback_image_failures": [
-    {
-      "post_id": "2006-09-01-2056-079",
-      "wayback_id": "49aaa343010006h5",
-      "image_url": "http://s12.album.sina.com.cn/pic/49aaa343020009mb",
-      "error": "图片下载失败：http://s12.album.sina.com.cn/pic/49aaa343020009mb（HTTP Error 404: Not Found）"
-    },
-    {
-      "post_id": "2007-11-09-1917-389",
-      "wayback_id": "49aaa34301000c1p",
-      "image_url": "http://s6.album.sina.com.cn/pic_3/49aaa34302001c35",
-      "error": "图片下载失败：http://s6.album.sina.com.cn/pic_3/49aaa34302001c35（HTTP Error 404: Not Found）"
-    },
     {
       "post_id": "2008-08-22-1121-426",
       "wayback_id": "49aaa3430100bde4",
@@ -631,12 +619,6 @@
       "error": "图片下载失败：http://static12.photo.sina.com.cn/middle/49aaa343t70dba4e60beb&690（HTTP Error 502: Bad Gateway）"
     },
     {
-      "post_id": "2011-01-22-0044-492",
-      "wayback_id": "49aaa34301017wh0",
-      "image_url": "http://s14.sinaimg.cn/middle/49aaa343t9a5de5c5415d&690",
-      "error": "图片下载失败：http://s14.sinaimg.cn/middle/49aaa343t9a5de5c5415d&690（HTTP Error 404: Not Found）"
-    },
-    {
       "post_id": "wayback-49aaa3430100069q",
       "wayback_id": "49aaa3430100069q",
       "image_url": "http://static16.photo.sina.com.cn/orignal/49aaa343254c502c1339f",
@@ -785,6 +767,8 @@
     "saved": 70,
     "failed": 0
   },
+  "rescued_images_added": 3,
+  "rescued_image_manifest": "content/rescued-images.json",
   "sidebar_comment_excerpts": 44,
   "posts_with_sidebar_comments": 13,
   "image_validation_failures": [
