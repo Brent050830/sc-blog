@@ -1,6 +1,7 @@
 (() => {
   "use strict";
 
+  setupNavigation();
   const data = window.BLOG_DATA;
   if (!data || !Array.isArray(data.posts)) return;
 
@@ -345,7 +346,6 @@
     setText("about-date-range", `${data.site.first_date} — ${data.site.last_date}`);
   }
 
-  setupNavigation();
   if (page === "home") homePage();
   if (page === "article") articlePage();
   if (page === "archive") archivePage();
