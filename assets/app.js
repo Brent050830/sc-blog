@@ -26,6 +26,7 @@
     const [year, month, day] = date.split("-");
     return `${year} 年 ${Number(month)} 月 ${Number(day)} 日`;
   };
+  const formatSnapshotTime = (timestamp) => /^\d{14}$/.test(timestamp) ? `${timestamp.slice(0,4)}-${timestamp.slice(4,6)}-${timestamp.slice(6,8)} ${timestamp.slice(8,10)}:${timestamp.slice(10,12)}:${timestamp.slice(12,14)} UTC` : "历史快照";
   const toneForYear = (year) => 134 + ((Number(year) - 2006) * 19) % 82;
   const setText = (id, value) => {
     const element = document.getElementById(id);
@@ -234,7 +235,7 @@
     const element = document.getElementById("wayback-evidence");
     if (!recovery || !element) return;
     const timestamp = recovery.snapshot_timestamp;
-    const date = timestamp.length === 14 ? `${timestamp.slice(0, 4)}-${timestamp.slice(4, 6)}-${timestamp.slice(6, 8)} ${timestamp.slice(8, 10)}:${timestamp.slice(10, 12)}:${timestamp.slice(12, 14)} UTC` : "历史快照";
+    const date = formatSnapshotTime(timestamp);
     const fields = [recovery.body_from_wayback ? "正文由历史快照补入" : "标题、日期与本地原文已交叉核验"];
     if (recovery.recovered_image_count) fields.push(`恢复 ${recovery.recovered_image_count} 张正文图片`);
     if (recovery.missing_image_count) fields.push(`${recovery.missing_image_count} 个原图引用仍失效`);
@@ -242,8 +243,9 @@
     const comments = recovery.comments;
     const commentText = comments ? `正文保留博主整理的 ${comments.comment_excerpts} 条历史评论摘录${comments.author_reply_confirmed ? "，含舒畅本人回应" : ""}。这些摘录由作者写入正文。` : "";
     const dynamicText = post.supplemental?.historical_comments ? "另已从独立评论页恢复部分留言，见下方历史网友评论；不代表完整评论区。" : recovery.dynamic_comments === "placeholder-only" ? "快照中的动态评论区仅有加载占位，尚未恢复评论列表。" : "本页快照未保存可读取的独立评论列表。";
+    const sidebarNote = post.sidebar_comments ? '<p>另有部分侧栏可见文字，见下方<a href="#sidebar-comments">侧栏历史评论摘录</a>；这不代表恢复了完整评论列表。</p>' : "";
     element.hidden = false;
-    element.innerHTML = `<h2>${waybackBadge(post)} 历史页面恢复记录</h2><p>${fields.join("；")}。</p><p><a href="${escapeHtml(recovery.snapshot_url)}" target="_blank" rel="noopener noreferrer">查看 Wayback 快照</a> · ${date}</p>${commentText ? `<p class="author-reply-note">${commentText}${comments.author_reply_confirmed ? ' <a href="#author-replies">阅读正文中的评论与回应 ↓</a>' : ""}</p>` : ""}<p>${dynamicText}</p>`;
+    element.innerHTML = `<h2>${waybackBadge(post)} 历史页面恢复记录</h2><p>${fields.join("；")}。</p><p><a href="${escapeHtml(recovery.snapshot_url)}" target="_blank" rel="noopener noreferrer">查看 Wayback 快照</a> · ${date}</p>${commentText ? `<p class="author-reply-note">${commentText}${comments.author_reply_confirmed ? ' <a href="#author-replies">阅读正文中的评论与回应 ↓</a>' : ""}</p>` : ""}<p>${dynamicText}</p>${sidebarNote}`;
   }
 
   function renderSupplemental(post) {
@@ -276,6 +278,14 @@
     element.innerHTML = `<small>${label}</small><strong>${escapeHtml(post.title)}</strong>`;
   }
 
+  function renderSidebarComments(post) {
+    const comments = post.sidebar_comments;
+    if (!comments) return;
+    const target = document.getElementById("sidebar-comments");
+    target.hidden = false;
+    target.innerHTML = `<h2>侧栏历史评论摘录</h2><p>保存 ${comments.total_saved} 组侧栏可见文字，不是完整评论或完整评论区。留言时间未知；来源中的快照时间仅表示存档抓取时间。</p><p class="comment-privacy">${escapeHtml(comments.redaction_note)}</p><details><summary>展开 ${comments.total_saved} 组历史评论摘录</summary><ol class="comment-list">${comments.items.map(comment => `<li class="sidebar-comment historical-comment"><header><strong>${escapeHtml(comment.author)}</strong><span class="comment-privacy">留言时间未知</span></header><div>${escapeHtml(comment.text)}</div><p class="comment-privacy">${comment.truncated ? "原侧栏文字已截断，后文未恢复。" : "仅保存侧栏展示文字，完整性未确认。"}</p><details class="excerpt-sources"><summary>查看快照来源</summary><ul>${comment.sources.map(source => `<li><a href="${escapeHtml(source.snapshot_url)}" target="_blank" rel="noopener noreferrer">来源快照 · ${formatSnapshotTime(source.snapshot_timestamp)}（非留言时间）</a></li>`).join("")}</ul></details></li>`).join("")}</ol></details>`;
+  }
+
   function articlePage() {
     const id = new URLSearchParams(location.search).get("id");
     const index = posts.findIndex((post) => post.id === id);
@@ -302,6 +312,7 @@
     document.getElementById("article-body").innerHTML = makeBody(post);
     renderWaybackEvidence(post);
     renderSupplemental(post);
+    renderSidebarComments(post);
     const origin = post.supplemental?.new_article && post.supplemental.platform === "sohu" ? "本条目来自舒畅搜狐博客的 RSS 历史快照；不是已核实的新浪转载。" : post.supplemental?.new_article && !post.supplemental.complete ? "本条目仅保留新浪首页快照中的预览，完整原页尚未恢复。" : post.wayback?.body_from_wayback ? "本条目的标题、日期与正文来自已核实的 Wayback 历史快照。" : post.kind === "image-only" ? `条目来自《${post.source_detail}》；导出文件只保留标题、日期和时间。` : `正文来自《${post.source_detail}》GBK 导出备份，仅整理换行，未改写原文。`;
     setText("source-note-text", `${origin}${imageCount ? ` ${imageCount} 张配图由各图下方标注的历史页面核实，已下载到本站保存。` : post.kind === "image-only" ? " 原图尚待恢复。" : ""}`);
     setText("article-number", `#${String(post.n || post.sequence).padStart(3, "0")}`);

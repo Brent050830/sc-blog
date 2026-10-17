@@ -292,3 +292,5 @@ kbd { padding: 2px 6px; border: 1px solid var(--line); border-radius: 5px; color
 .historical-comment{padding:16px 0;border-bottom:1px solid #e0e7dc}
 .historical-comment header{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:7px}
 .historical-comment time{font-size:11px;color:#6c7d74}
+.excerpt-sources li{overflow-wrap:anywhere;font-size:12px}
+.excerpt-sources ul{padding-left:20px}

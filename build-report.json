@@ -785,6 +785,8 @@
     "saved": 70,
     "failed": 0
   },
+  "sidebar_comment_excerpts": 44,
+  "posts_with_sidebar_comments": 13,
   "image_validation_failures": [
     {
       "post_id": "wayback-49aaa3430100069q",
