@@ -8,18 +8,21 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/styles.css">
   <link rel="stylesheet" href="assets/magazines.css">
+  <link rel="stylesheet" href="assets/interactive/reader.css">
 </head>
 <body data-page="magazines">
   <a class="skip-link" href="#main">跳到正文</a>
   <header class="site-header"><div class="nav-shell"><a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">舒</span><span><strong>舒畅白小兔</strong><small>博客文字存档</small></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">菜单</button><nav id="site-nav" class="site-nav" aria-label="主导航"><a href="index.html">文章</a><a href="archive.html">归档</a><a href="official.html">旧官网存档</a><a class="is-current" aria-current="page" href="magazines.html">电子杂志馆</a><a href="about.html">关于存档</a></nav></div></header>
   <main id="main" class="page-shell magazine-shell">
     <header class="magazine-intro"><p class="eyebrow">THE MAGAZINE SHELF</p><h1>电子杂志馆</h1><p>留下旧杂志的样子，也让里面的文字重新被阅读。</p></header>
-    <p class="magazine-notice">非官方、非商业历史存档。作品权利归原作者及制作团队；原貌画面与整理文字分开保存，不运行旧程序或 Flash。当前先展示一期试点，不能据此认定其他刊物已经完成重建。</p>
+    <p class="magazine-notice">非官方、非商业历史存档。作品权利归原作者及制作团队。兼容阅读器保留原刊动画和互动，无需 Flash 插件或旧程序；原件保留，恢复资源不等于所有操作均已兼容。</p>
+    <section><h2>原版互动 · 兼容阅读</h2><p id="interactive-count" role="status">正在读取本地目录…</p><div id="interactive-shelf" class="interactive-shelf"></div></section>
+    <h2>截图与文字 · 备用阅读</h2><p>以下保留第二期早期截图和经核对文字；不是上方互动阅读器的全部刊物。</p>
     <div id="magazine-shelf" class="magazine-shelf"></div>
     <section class="magazine-method"><h2>原貌留存，文字慢慢校对</h2><p>截图序号不等于原刊页码，一张画面可能包含左右两页。空白、背景、未捕获的分支和未识别文字都明确保留缺口。机器识别有错字风险；只有经过核对的杂志文字才用作博客转载佐证。</p></section>
     <noscript><p>启用 JavaScript 后可浏览期刊目录与阅读器。</p></noscript>
   </main>
   <footer class="site-footer"><div><span>非官方公益历史存档</span><span>·</span><span>不把恢复范围当作完整期刊</span></div><a href="#main">回到顶部 ↑</a></footer>
-  <script src="assets/app.js"></script><script src="assets/magazine-data.js"></script><script src="assets/magazines.js"></script>
+  <script src="assets/app.js"></script><script src="assets/magazine-data.js"></script><script src="assets/magazines.js"></script><script src="assets/interactive/shelf.js"></script>
 </body>
 </html>
