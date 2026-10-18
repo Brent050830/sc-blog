@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="舒畅历史电子杂志在线阅读：原貌与文字切换，明确标记截图、OCR和恢复缺口。">
+  <title>杂志阅读｜舒畅白小兔</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/magazines.css">
+</head>
+<body data-page="magazine">
+  <a class="skip-link" href="#main">跳到正文</a>
+  <header class="site-header"><div class="nav-shell"><a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">舒</span><span><strong>舒畅白小兔</strong><small>博客文字存档</small></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">菜单</button><nav id="site-nav" class="site-nav" aria-label="主导航"><a href="index.html">文章</a><a href="archive.html">归档</a><a href="official.html">旧官网存档</a><a class="is-current" href="magazines.html">电子杂志馆</a><a href="about.html">关于存档</a></nav></div></header>
+  <main id="main" class="page-shell magazine-shell">
+    <p class="magazine-breadcrumb"><a href="magazines.html">← 返回杂志馆</a></p>
+    <section id="reader-error" class="magazine-notice" hidden><h1>没有找到这期杂志</h1><p>请从杂志馆选择已整理的期刊。未开放的期刊不会用其他内容代替。</p></section>
+    <div id="reader-shell" hidden>
+      <header class="reader-heading"><div><p class="eyebrow">PRESERVED EDITION · PARTIAL RECOVERY</p><h1 id="reader-title"></h1><p id="reader-scope"></p></div><a href="magazines.html">书架 ↗</a></header>
+      <div class="reader-layout">
+        <aside class="reader-sidebar" aria-label="本刊目录与检索">
+          <label for="magazine-search">搜索本刊文字与标题</label>
+          <input id="magazine-search" type="search" placeholder="例如：秋天、生日" autocomplete="off">
+          <p class="search-scope">仅搜索已整理文字及题名，不代表完整期刊检索。</p>
+          <div id="magazine-search-results" aria-live="polite" hidden></div>
+          <details id="reader-toc" open><summary>画面目录 · 25</summary><div id="magazine-thumbnails" class="magazine-thumbnails"></div></details>
+          <details class="magazine-provenance"><summary>恢复范围与制作署名</summary><p id="reader-text-note"></p><p>目录中的部分标题为整理者所拟。原刊页码只填写已核对项，其余不推算。</p><p id="reader-cover-leads"></p><p>下面署名直接导自 SWF 文字标签，不代表已核验真实身份；联系信息已隐藏。</p><pre id="reader-credits"></pre><small id="reader-credits-method"></small></details>
+        </aside>
+        <section class="reader-content" aria-label="杂志阅读区">
+          <div class="reader-toolbar">
+            <div class="reader-modes" role="group" aria-label="阅读模式"><button id="mode-original" type="button" aria-pressed="true">原貌</button><button id="mode-text" type="button" aria-pressed="false">文字</button></div>
+            <div class="reader-paging"><button id="capture-prev" type="button">← 前一画面</button><label><span class="sr-only">跳至截图序号</span><select id="capture-select"></select></label><button id="capture-next" type="button">后一画面 →</button></div>
+          </div>
+          <p id="reader-position" class="reader-position" role="status"></p>
+          <article class="capture-card">
+            <header><p id="capture-numbers" class="capture-numbers"></p><h2 id="capture-title" tabindex="-1"></h2><p id="capture-warning" class="magazine-notice" hidden></p></header>
+            <div id="capture-original"><button id="capture-enlarge" type="button" aria-label="放大当前原貌画面"><img id="capture-image" alt="" width="796" height="596"><span>放大查看 ↗</span></button><p class="capture-help">原貌保留旧按钮的画面，但旧按钮不能操作；请使用上方本站导航。放大不会增加原图清晰度。</p></div>
+            <section id="capture-text" hidden><p id="capture-text-status" class="text-status"></p><div id="capture-transcript" class="capture-transcript"></div></section>
+            <div id="capture-blog-link"></div>
+            <details class="magazine-provenance"><summary>当前画面来源与校验</summary><p>来源：本地杂志导出的原始 PNG；原文件未改写。序号代表本批导出顺序，不证明原刊的完整页序。</p><a id="capture-file" target="_blank" rel="noopener">打开原貌文件 ↗</a><p id="capture-hash" class="magazine-hash"></p></details>
+          </article>
+        </section>
+      </div>
+    </div>
+    <noscript><p>启用 JavaScript 后可使用阅读器。本站不会执行旧 Flash 或请求旧官网。</p></noscript>
+  </main>
+  <dialog id="capture-viewer" aria-labelledby="capture-viewer-title"><div class="capture-viewer-toolbar"><h2 id="capture-viewer-title"></h2><button id="capture-viewer-close" type="button" autofocus>关闭 ×</button></div><label class="capture-zoom">放大比例 <input id="capture-zoom" type="range" min="1" max="3" step="0.25" value="1"></label><div class="capture-zoom-area"><img id="capture-viewer-image" alt=""></div><p>可滚动查看；Esc 关闭。图像放大不代表恢复出更高分辨率。</p></dialog>
+  <footer class="site-footer"><div><span>非官方公益历史存档</span><span>·</span><span>保留出处与恢复缺口</span></div><a href="#main">回到顶部 ↑</a></footer>
+  <script src="assets/app.js"></script><script src="assets/magazine-data.js"></script><script src="assets/magazines.js"></script>
+</body>
+</html>
