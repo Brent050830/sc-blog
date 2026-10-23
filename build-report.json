@@ -429,7 +429,7 @@
   "seeyou_manifest": "D:\\17871\\shuchang\\blog-rebuild\\content\\seeyou-images.json",
   "seeyou_pages_checked": 24,
   "posts_with_recovered_images": 256,
-  "recovered_image_files": 759,
+  "recovered_image_files": 792,
   "wayback_posts": 309,
   "wayback_new_posts": 21,
   "wayback_summary": {
@@ -769,6 +769,9 @@
   },
   "rescued_images_added": 3,
   "rescued_image_manifest": "content/rescued-images.json",
+  "recovered_originals_added": 33,
+  "recovered_originals_replaced": 167,
+  "recovered_originals_manifest": "content/recovered-originals.json",
   "sidebar_comment_excerpts": 44,
   "posts_with_sidebar_comments": 13,
   "image_validation_failures": [

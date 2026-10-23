@@ -6,7 +6,7 @@ window.RufflePlayer={config:{publicPath:new URL("vendor/",location.href).href,po
   allowScriptAccess:false,allowNetworking:"internal",openUrlMode:"deny",allowFullscreen:false,showSwfDownload:false,
   contextMenu:"off",compatibilityRules:false,credentialAllowList:[],socketProxy:[],favorFlash:false,
   maxExecutionDuration:5,backgroundExecutionMode:"pause",deviceFontRenderer:"canvas",scale:"showAll",forceScale:true}};
-let api,muted=query.get("sound")!=="1",restarting=false,disposed=false;
+let api,muted=query.get("sound")!=="1",paused=false,restarting=false,disposed=false;
 // Leaving a whole iframe (jump/issue switch/navigation) must also tear down its
 // player. Native in-magazine page changes are handled by the AS2 video adapter.
 function dispose(){
@@ -64,12 +64,12 @@ window.addEventListener("DOMContentLoaded",async()=>{
 window.addEventListener("message",async event=>{
   if(event.source!==parent||event.origin!==location.origin||event.data?.type!=="magazine-control"||event.data.run!==run||!api||disposed)return;
   const command=event.data.command;
-  if(command==="pause"){api.suspend();send({status:"已暂停"});}
-  if(command==="resume"){api.resume();send({status:"已继续运行"});}
-  if(command==="sound"){muted=!muted;api.volume=muted?0:.7;send({status:muted?"已静音":"声音已开启；如无声请点击杂志画面"});}
+  if(command==="pause"){paused=true;api.volume=0;api.suspend();send({status:"已暂停"});}
+  if(command==="resume"){paused=false;api.resume();api.volume=muted?0:.7;send({status:"已继续运行"});}
+  if(command==="sound"){muted=!muted;api.volume=muted||paused?0:.7;send({status:muted?"已静音":"声音已开启；如无声请点击杂志画面"});}
   if(command==="restart"&&!restarting){
     restarting=true;
-    try{await api.reload();api.traceObserver=trace;api.volume=muted?0:.7;send({status:"已从头重播"});}
+    try{await api.reload();paused=false;api.traceObserver=trace;api.volume=muted?0:.7;send({status:"已从头重播"});}
     catch(error){send({status:"重播失败",log:String(error)});}
     finally{restarting=false;}
   }
