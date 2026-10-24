@@ -8,6 +8,7 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/styles.css">
   <link rel="stylesheet" href="assets/magazines.css">
+  <link rel="stylesheet" href="assets/recovery-status.css">
 </head>
 <body data-page="article">
   <a class="skip-link" href="#main">跳到正文</a>
@@ -28,6 +29,7 @@
           <p id="article-lede" class="article-lede"></p>
         </header>
         <div class="article-rule"><span></span></div>
+        <section id="article-recovery-status" class="recovery-panel" aria-label="当前恢复状态" hidden></section>
         <div id="article-body" class="article-body"></div>
         <section id="wayback-evidence" class="wayback-evidence" aria-label="Wayback 恢复记录" hidden></section>
         <section id="supplemental-evidence" class="wayback-evidence" aria-label="补充来源记录" hidden></section>
@@ -49,6 +51,8 @@
   <footer class="site-footer"><div><span>非官方公益文字存档</span><span>·</span><span>忠实保留原文</span></div><a href="#main">回到顶部 ↑</a></footer>
   <script src="assets/posts.js"></script>
   <script src="assets/app.js"></script>
+  <script src="assets/recovery-data.js"></script>
+  <script src="assets/recovery-status.js"></script>
   <script src="assets/magazine-data.js"></script><script src="assets/magazines.js"></script>
 </body>
 </html>
