@@ -21,9 +21,9 @@
 .recovery-panel details { margin: 1rem 0; }
 .recovery-panel summary { cursor: pointer; font-weight: 600; }
 .recovery-identity { font-family: ui-monospace, monospace; font-size: .8rem; }
-.recovery-new-image { margin: 1rem 0; text-align: center; }
-.recovery-new-image img { max-width: 100%; height: auto; display: inline-block; }
-.recovery-new-image figcaption { font-size: .82rem; color: #6d655a; }
+.recovery-new-image, .recovery-version-image { margin: 1rem 0; text-align: center; }
+.recovery-new-image img, .recovery-version-image img { max-width: 100%; height: auto; display: inline-block; }
+.recovery-new-image figcaption, .recovery-version-image figcaption { font-size: .82rem; color: #6d655a; }
 .recovery-table-scroll { overflow-x: auto; max-width: 100%; margin: .7rem 0; }
 .recovery-panel table { width: 100%; min-width: 540px; border-collapse: collapse; font-size: .84rem; }
 .recovery-panel th, .recovery-panel td { padding: .55rem; border-bottom: 1px solid #ded5c8; text-align: left; vertical-align: top; }
