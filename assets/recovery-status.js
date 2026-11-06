@@ -74,9 +74,9 @@
       }
       if (status.historical_version_images.length) {
         const label = document.getElementById("article-status");
-        if (label) label.append(document.createTextNode(` · 后期版本配图 ${status.historical_version_images.length} 张`));
-        article.append(node("h3", `同篇后期版本配图：${status.historical_version_images.length} 张`));
-        article.append(node("p", "这些照片确实出现在本篇博文的后期快照中，且当前正文配图区未显示。尚无证据证明它们与早期失图ID是同一张，因此原缺图仍列为待恢复。", "recovery-warning"));
+        if (label) label.append(document.createTextNode(` · 已确认同篇后期配图 ${status.historical_version_images.length} 张`));
+        article.append(node("h3", `已确认的同篇博客配图（后期版本）：${status.historical_version_images.length} 张`));
+        article.append(node("p", "这些照片直接见于本篇博文的后期正文快照，确认为本篇博客配图，且当前正文配图区未显示。尚不能逐张核对它们与早期失图是否相同，因此早期缺图仍列为待恢复。", "recovery-warning"));
         status.historical_version_images.forEach(image => {
           const figure = node("figure", undefined, "recovery-version-image");
           const img = node("img");
@@ -85,7 +85,7 @@
           img.width = image.width;
           img.height = image.height;
           img.loading = "lazy";
-          const caption = node("figcaption", `${image.width}×${image.height} · ${image.snapshot_timestamp.slice(0, 4)} 年快照可见 · 原图身份未确认。 `);
+          const caption = node("figcaption", `${image.width}×${image.height} · ${image.snapshot_timestamp.slice(0, 4)} 年同篇快照配图 · 与早期失图是否同张未核实。 `);
           caption.append(external(image.source_page, "查看同篇快照"));
           figure.append(img, caption);
           article.append(figure);
@@ -131,7 +131,7 @@
   if (s.newly_recovered_resources) overview.append(node("p", `其中原博客数据保留 ${s.original_data_image_resources} 项，本轮另补回 ${s.newly_recovered_resources} 项，在对应文章的恢复区展示。`));
   overview.append(node("h3", "四种图片证据，分别看"));
   overview.append(node("p", `原图已补回：${s.resolved_historical_references} 条已知历史图片引用已有可用文件。这里按引用计，不是本轮新增张数。`));
-  overview.append(node("p", `同篇后期配图、原图身份未确认：${s.historical_version_resources} 张。照片见于同一篇博文的后期快照，不抵扣早期失图ID。`));
+  overview.append(node("p", `已确认的同篇博客配图（后期版本）：${s.historical_version_resources} 张。博客归属有原正文快照证据；与早期失图是否同张未核实，不抵扣早期失图ID。`));
   overview.append(node("p", `知道图片ID但尚无可用图：${s.known_unrecovered_references} 条引用；另有 ${s.damaged_resources} 个损坏资源。未取到不等于图从未存在。`));
   overview.append(node("p", "完全找不到可确认的图片ID：数量未知。只有题录或不完整正文时，不能据此推算缺了几张。"));
   overview.append(note());
