@@ -767,6 +767,7 @@
     "saved": 70,
     "failed": 0
   },
+  "recovered_text_posts": 1,
   "rescued_images_added": 3,
   "rescued_image_manifest": "content/rescued-images.json",
   "recovered_originals_added": 33,
