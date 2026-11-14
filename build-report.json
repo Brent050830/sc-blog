@@ -14,7 +14,7 @@
   "last_date": "2014-05-12",
   "years": {
     "2006": 170,
-    "2007": 242,
+    "2007": 243,
     "2008": 60,
     "2009": 28,
     "2010": 19,
@@ -430,7 +430,7 @@
   "seeyou_pages_checked": 24,
   "posts_with_recovered_images": 256,
   "recovered_image_files": 792,
-  "wayback_posts": 309,
+  "wayback_posts": 310,
   "wayback_new_posts": 21,
   "wayback_summary": {
     "frozen_html_files": 207,
@@ -745,7 +745,7 @@
       "error": "图片下载失败：http://static2.photo.sina.com.cn/middle/49aaa343g82a1f15f4e91&690（HTTP Error 502: Bad Gateway）"
     }
   ],
-  "total_posts": 530,
+  "total_posts": 531,
   "supplemental_summary": {
     "pages": 193,
     "matched_posts": 204,
@@ -757,7 +757,7 @@
     "homepage_pages_with_articles": 63,
     "images_added_to_site": 272
   },
-  "supplemental_new_posts": 10,
+  "supplemental_new_posts": 11,
   "historical_comments": 100,
   "homepage_audit": {
     "status": "complete",
