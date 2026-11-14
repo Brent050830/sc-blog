@@ -50,6 +50,15 @@
       article.append(node("p", facts.join("；") + "。"));
       if (!status.known_unavailable_references) article.append(node("p", "未记录到其他待恢复引用，不代表原帖无缺图。"));
       if (status.text_status === "partial-preview") article.append(node("p", "正文状态：仅有不完整预览，全文尚待恢复。", "recovery-warning"));
+      if (status.text_status === "aliased-merged") {
+        const p = node("p", undefined, "recovery-note");
+        p.append(document.createTextNode("正文状态：经考证，本篇为博文《周末愉快！》的首发异名版本，正文全文完整保存在 "));
+        const link = node("a", "《周末愉快！》", undefined);
+        link.href = "article.html?id=2007-09-08-0019-343";
+        p.append(link);
+        p.append(document.createTextNode(" 中，不属于缺失缺口。"));
+        article.append(p);
+      }
       if (status.text_status === "unknown-empty") article.append(node("p", "正文或图片信息不足；不能仅凭导出分类认定原帖是纯图片帖。", "recovery-warning"));
       article.append(note());
       if (status.newly_recovered_images.length) {
