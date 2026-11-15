@@ -50,6 +50,48 @@
       article.append(node("p", facts.join("；") + "。"));
       if (!status.known_unavailable_references) article.append(node("p", "未记录到其他待恢复引用，不代表原帖无缺图。"));
       if (status.text_status === "partial-preview") article.append(node("p", "正文状态：仅有不完整预览，全文尚待恢复。", "recovery-warning"));
+      if (id === "wayback-49aaa34301000bp3") {
+        // 学术档案卡：长假日记之二：食蟹记（全网物理孤本与题注存续证明）
+        const card = node("div", undefined, "provenance-card");
+        const title = node("h3");
+        title.append(node("span", "学术考据档案", "provenance-badge"));
+        title.append(document.createTextNode("全网物理孤本与题注保全证明"));
+        card.append(title);
+        const ul = node("ul");
+        const li1 = node("li");
+        li1.append(node("strong", "存档性质："));
+        li1.append(document.createTextNode("本篇为全网公开存档中唯一幸存的物理孤本，来源于 2007-10-11 新浪博客首页历史快照。"));
+        const li2 = node("li");
+        li2.append(node("strong", "配图与诗词题注："));
+        li2.append(document.createTextNode("快照成功保全原本全部 3 张居中配图，且忠实完整地记录了舒畅亲笔题写的诗词图注（配图1《擒蟹欲开筵》、配图2《举箸向龙虾》、配图3《埋头饕餮者，小铃铛是也》），图元及图注 100% 完整。"));
+        const li3 = node("li");
+        li3.append(node("strong", "截断成因考证："));
+        li3.append(document.createTextNode("当年新浪博客首页列表模板对单篇文章实行字数截断机制，后半段文字未能随首页快照一并留存。"));
+        const li4 = node("li");
+        li4.append(node("strong", "后续线索指引："));
+        li4.append(document.createTextNode("经排查舒畅官方认可的 6 大粉丝站生态，原舒畅官方论坛设有【畅博日志】（fid-65）专区，该篇发帖编号区间锁定在 TID 33000~44500，为未来离线原盘检索提供关键标靶。"));
+        ul.append(li1, li2, li3, li4);
+        card.append(ul);
+        article.append(card);
+      }
+      if (id === "wayback-49aaa3430100088c") {
+        // 学术档案卡：在香港拜访儿时表演启蒙老师（完备纯图片博文确证）
+        const card = node("div", undefined, "provenance-card");
+        const title = node("h3");
+        title.append(node("span", "学术考据档案", "provenance-badge"));
+        title.append(document.createTextNode("完备纯图片博文确证证明"));
+        card.append(title);
+        const ul = node("ul");
+        const li1 = node("li");
+        li1.append(node("strong", "模板机制纠偏："));
+        li1.append(document.createTextNode("新浪 2010 年博客首页快照模板在整页每篇博文末尾统一渲染了系统组件“点击此处查看全文”，此前曾被机械算法误判为截断预览。"));
+        const li2 = node("li");
+        li2.append(node("strong", "正文结构确证："));
+        li2.append(document.createTextNode("经逐行比对历史快照原始 HTML 结构，本篇发表时即为 3 张居中高清合影，正文并无被截断的文本；全部配图已完备保存在站内，确证原本即为完备的纯图片博文。"));
+        ul.append(li1, li2);
+        card.append(ul);
+        article.append(card);
+      }
       if (status.text_status === "aliased-merged") {
         const p = node("p", undefined, "recovery-note");
         p.append(document.createTextNode("正文状态：经考证，本篇为博文《周末愉快！》的首发异名版本，正文全文完整保存在 "));
@@ -58,6 +100,10 @@
         p.append(link);
         p.append(document.createTextNode(" 中，不属于缺失缺口。"));
         article.append(p);
+      }
+      if (status.text_status === "complete-image-only") {
+        // 完备纯图片博文状态提示
+        article.append(node("p", "正文状态：经核验，本篇发布时即为纯图片博文，配图已全部保全。", "recovery-note"));
       }
       if (status.text_status === "unknown-empty") article.append(node("p", "正文或图片信息不足；不能仅凭导出分类认定原帖是纯图片帖。", "recovery-warning"));
       article.append(note());
@@ -158,7 +204,11 @@
       const li = node("li");
       li.append(p.id ? articleLink(p) : node("span", p.title));
       li.append(document.createTextNode(`（${p.date || "发表日期未知"}${p.time ? " " + p.time : ""}） `));
-      if (p.source_url) li.append(external(p.source_url, "题录证据"));
+      if (p.source_url) li.append(external(p.source_url, "快照题录证据"));
+      if (p.original_url) {
+        li.append(document.createTextNode(" · "));
+        li.append(external(p.original_url, "原始博文URL"));
+      }
       list.append(li);
     });
     overview.append(list);

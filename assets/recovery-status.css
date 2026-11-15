@@ -29,6 +29,53 @@
 .recovery-panel th, .recovery-panel td { padding: .55rem; border-bottom: 1px solid #ded5c8; text-align: left; vertical-align: top; }
 .recovery-panel td:first-child { white-space: nowrap; }
 .recovery-panel th:nth-child(n+3), .recovery-panel td:nth-child(n+3) { text-align: center; }
+
+/* 学术档案卡（Scholarly Provenance Card） */
+.provenance-card {
+  margin: 1.25rem 0;
+  padding: 1.1rem 1.3rem;
+  background: #f4eee1;
+  border: 1px solid #c9bca8;
+  border-left: 4px solid #8e6d45;
+  border-radius: 8px;
+  font-size: .9rem;
+  line-height: 1.85;
+}
+.provenance-card h3 {
+  margin: 0 0 .6rem;
+  font-size: 1rem;
+  color: #5c4326;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.provenance-card .provenance-badge {
+  font-size: .75rem;
+  font-weight: 600;
+  padding: .15rem .5rem;
+  background: #8e6d45;
+  color: #fff;
+  border-radius: 4px;
+}
+.provenance-card ul {
+  margin: .5rem 0;
+  padding-left: 1.25rem;
+}
+.provenance-card li {
+  margin-bottom: .4rem;
+}
+.provenance-card strong {
+  color: #4a3820;
+}
+.provenance-card .provenance-footer {
+  margin-top: .6rem;
+  font-size: .82rem;
+  color: #7d7265;
+  border-top: 1px dashed #dcd0bf;
+  padding-top: .45rem;
+}
+
 @media (max-width: 600px) {
   .recovery-panel { border-radius: 10px; }
   .recovery-panel h2 { font-size: 1.08rem; }
