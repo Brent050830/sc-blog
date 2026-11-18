@@ -50,47 +50,34 @@
       article.append(node("p", facts.join("；") + "。"));
       if (!status.known_unavailable_references) article.append(node("p", "未记录到其他待恢复引用，不代表原帖无缺图。"));
       if (status.text_status === "partial-preview") article.append(node("p", "正文状态：仅有不完整预览，全文尚待恢复。", "recovery-warning"));
-      if (id === "wayback-49aaa34301000bp3") {
-        // 学术档案卡：长假日记之二：食蟹记（全网物理孤本与题注存续证明）
-        const card = node("div", undefined, "provenance-card");
-        const title = node("h3");
-        title.append(node("span", "学术考据档案", "provenance-badge"));
-        title.append(document.createTextNode("全网物理孤本与题注保全证明"));
-        card.append(title);
-        const ul = node("ul");
-        const li1 = node("li");
-        li1.append(node("strong", "存档性质："));
-        li1.append(document.createTextNode("本篇为全网公开存档中唯一幸存的物理孤本，来源于 2007-10-11 新浪博客首页历史快照。"));
-        const li2 = node("li");
-        li2.append(node("strong", "配图与诗词题注："));
-        li2.append(document.createTextNode("快照成功保全原本全部 3 张居中配图，且忠实完整地记录了舒畅亲笔题写的诗词图注（配图1《擒蟹欲开筵》、配图2《举箸向龙虾》、配图3《埋头饕餮者，小铃铛是也》），图元及图注 100% 完整。"));
-        const li3 = node("li");
-        li3.append(node("strong", "截断成因考证："));
-        li3.append(document.createTextNode("当年新浪博客首页列表模板对单篇文章实行字数截断机制，后半段文字未能随首页快照一并留存。"));
-        const li4 = node("li");
-        li4.append(node("strong", "后续线索指引："));
-        li4.append(document.createTextNode("经排查舒畅官方认可的 6 大粉丝站生态，原舒畅官方论坛设有【畅博日志】（fid-65）专区，该篇发帖编号区间锁定在 TID 33000~44500，为未来离线原盘检索提供关键标靶。"));
-        ul.append(li1, li2, li3, li4);
-        card.append(ul);
-        article.append(card);
+      const completeness = status.completeness_evidence;
+      if (completeness) {
+        const evidence = node("p", completeness.description + " ", "recovery-warning");
+        evidence.append(external(completeness.source_url, "2010 年新浪首页快照"));
+        article.append(evidence);
       }
-      if (id === "wayback-49aaa3430100088c") {
-        // 学术档案卡：在香港拜访儿时表演启蒙老师（完备纯图片博文确证）
-        const card = node("div", undefined, "provenance-card");
-        const title = node("h3");
-        title.append(node("span", "学术考据档案", "provenance-badge"));
-        title.append(document.createTextNode("完备纯图片博文确证证明"));
-        card.append(title);
-        const ul = node("ul");
-        const li1 = node("li");
-        li1.append(node("strong", "模板机制纠偏："));
-        li1.append(document.createTextNode("新浪 2010 年博客首页快照模板在整页每篇博文末尾统一渲染了系统组件“点击此处查看全文”，此前曾被机械算法误判为截断预览。"));
-        const li2 = node("li");
-        li2.append(node("strong", "正文结构确证："));
-        li2.append(document.createTextNode("经逐行比对历史快照原始 HTML 结构，本篇发表时即为 3 张居中高清合影，正文并无被截断的文本；全部配图已完备保存在站内，确证原本即为完备的纯图片博文。"));
-        ul.append(li1, li2);
-        card.append(ul);
-        article.append(card);
+      const captioned = status.newly_recovered_images.find(image => image.caption);
+      if (captioned) {
+        const evidence = node("p", "2007-10-11 的新浪首页快照保留三张照片及逐图题注，正文停在句中。 ", "recovery-note");
+        evidence.append(external(captioned.source_page, "2007 年新浪首页快照"));
+        article.append(evidence);
+      }
+      if (status.identity_pending_image_paths?.length) {
+        article.append(node("p", "两张照片来自同篇搜狐存档，与缺失新浪引用的逐图对应关系待核。", "recovery-warning"));
+      }
+      if (status.source_placeholders?.length) {
+        const evidence = node("p", `${status.source_placeholders.length} 个搜狐图片地址曾返回通用占位图，网页保留来源记录。 `, "recovery-note");
+        status.source_placeholders.forEach((item, index) => {
+          if (index) evidence.append(document.createTextNode(" · "));
+          evidence.append(external(item.source_page, "搜狐原帖存档"), document.createTextNode(" "), external(item.original_url, "图片引用"));
+        });
+        article.append(evidence);
+      }
+      if (status.contemporary_repost) {
+        const repost = status.contemporary_repost;
+        const evidence = node("p", `论坛资料组在 ${repost.posted_at} 转载了同文。游客快照中的附件区只保留权限提示。 `, "recovery-note");
+        evidence.append(external(repost.snapshot_url, "查看同期论坛转载"));
+        article.append(evidence);
       }
       if (status.text_status === "aliased-merged") {
         const p = node("p", undefined, "recovery-note");
@@ -101,19 +88,17 @@
         p.append(document.createTextNode(" 中，不属于缺失缺口。"));
         article.append(p);
       }
-      if (status.text_status === "complete-image-only") {
-        // 完备纯图片博文状态提示
-        article.append(node("p", "正文状态：经核验，本篇发布时即为纯图片博文，配图已全部保全。", "recovery-note"));
-      }
       if (status.text_status === "unknown-empty") article.append(node("p", "正文或图片信息不足；不能仅凭导出分类认定原帖是纯图片帖。", "recovery-warning"));
       article.append(note());
+      const displayRecovered = status.newly_recovered_images.filter(image => !status.display_duplicates?.[image.path]);
+      const gallery = displayRecovered.filter(image => !image.caption);
       if (status.newly_recovered_images.length) {
         const label = document.getElementById("article-status");
-        if (label) label.append(document.createTextNode(` · 已按原图片引用补回 ${status.newly_recovered_images.length} 张`));
+        if (label && displayRecovered.length) label.append(document.createTextNode(` · 已按原图片引用补回 ${displayRecovered.length} 张`));
         const oldRecord = document.getElementById("supplemental-evidence");
         if (oldRecord) oldRecord.prepend(node("p", "以下保留旧批次统计；本轮补图已计入上方当前恢复状态。", "recovery-note"));
-        article.append(node("p", "本轮从原帖引用补回以下配图，已计入本页已保存资源。历史来源区的旧失败数保留作记录，以这里的当前状态为准。"));
-        status.newly_recovered_images.forEach(image => {
+        if (gallery.length) article.append(node("p", "以下配图按本篇历史引用补回。历史来源区保留当批失败记录。"));
+        gallery.forEach(image => {
           const figure = node("figure", undefined, "recovery-new-image");
           const img = node("img");
           img.src = image.path;
@@ -127,12 +112,13 @@
           article.append(figure);
         });
       }
-      if (status.historical_version_images.length) {
+      const displayVersions = status.historical_version_images.filter(image => !status.display_duplicates?.[image.path]);
+      if (displayVersions.length) {
         const label = document.getElementById("article-status");
-        if (label) label.append(document.createTextNode(` · 已确认同篇后期配图 ${status.historical_version_images.length} 张`));
-        article.append(node("h3", `已确认的同篇博客配图（后期版本）：${status.historical_version_images.length} 张`));
+        if (label) label.append(document.createTextNode(` · 已确认同篇后期配图 ${displayVersions.length} 张`));
+        article.append(node("h3", `已确认的同篇博客配图（后期版本）：${displayVersions.length} 张`));
         article.append(node("p", "这些照片直接见于本篇博文的后期正文快照，确认为本篇博客配图，且当前正文配图区未显示。尚不能逐张核对它们与早期失图是否相同，因此早期缺图仍列为待恢复。", "recovery-warning"));
-        status.historical_version_images.forEach(image => {
+        displayVersions.forEach(image => {
           const figure = node("figure", undefined, "recovery-version-image");
           const img = node("img");
           img.src = image.path;
@@ -167,7 +153,7 @@
       article.append(overview);
       // Correct the old explanatory heuristic; author text and BLOG_DATA stay untouched.
       const post = window.BLOG_DATA.posts.find(p => p.id === id);
-      if (post?.kind === "image-only" && !post.images?.length && status.text_status !== "partial-preview") {
+      if (post?.kind === "image-only" && !post.images?.length && status.text_status === "unknown-empty") {
         const lede = document.getElementById("article-lede");
         if (lede) lede.textContent = "导出或快照中的正文信息有限，以下保留已取得的资源；原帖配图总数未知。";
         const placeholder = document.querySelector("#article-body .missing-content p");
@@ -183,17 +169,19 @@
   const s = data.summary;
   overview.append(node("h2", "已知缺图与缺文清单"));
   overview.append(node("p", `目前保存 ${s.site_posts} 条内容、${s.saved_image_resources} 个图片展示项。已知 ${s.known_unrecovered_references} 条图片引用未恢复，另有 ${s.damaged_resources} 个损坏资源；去重后涉及 ${s.affected_posts} 篇。`));
-  if (s.newly_recovered_resources) overview.append(node("p", `其中原博客数据保留 ${s.original_data_image_resources} 项，本轮另补回 ${s.newly_recovered_resources} 项，在对应文章的恢复区展示。`));
+  overview.append(node("p", `原博客数据保留 ${s.original_data_image_resources} 项，历史批次按图片引用补入 ${s.newly_recovered_resources} 项。合并展示 ${s.same_photo_copies_hidden} 个同画面副本，另剔除 ${s.source_placeholders_hidden} 个搜狐占位图，详情页保留对应来源。`));
   overview.append(node("h3", "四种图片证据，分别看"));
   overview.append(node("p", `原图已补回：${s.resolved_historical_references} 条已知历史图片引用已有可用文件。这里按引用计，不是本轮新增张数。`));
   overview.append(node("p", `已确认的同篇博客配图（后期版本）：${s.historical_version_resources} 张。博客归属有原正文快照证据；与早期失图是否同张未核实，不抵扣早期失图ID。`));
+  if (s.identity_pending_resources) overview.append(node("p", "已取得同篇搜狐配图，新浪原图身份待核 " + s.identity_pending_resources + " 张。"));
   overview.append(node("p", `知道图片ID但尚无可用图：${s.known_unrecovered_references} 条引用；另有 ${s.damaged_resources} 个损坏资源。未取到不等于图从未存在。`));
   overview.append(node("p", "完全找不到可确认的图片ID：数量未知。只有题录或不完整正文时，不能据此推算缺了几张。"));
   overview.append(note());
-  overview.append(node("p", "原博客历史总篇数、尚未发现的遗漏数未知。下面三类内容缺口分别列出，不相加成“总共只缺几篇”。", "recovery-warning"));
+  overview.append(node("p", "原博客历史总篇数、尚未发现的遗漏数未知。下方各项记录的是目前能核实的内容状态。", "recovery-warning"));
   const groups = [
     ["title_only", "仅有题录、尚无正文"],
     ["partial_preview", "站内仅有不完整预览"],
+    ["completeness_unverified", "原篇完整性待核"],
     ["empty_without_images", "空正文／图片类暂无可显示图片"],
   ];
   for (const [key, label] of groups) {
@@ -204,7 +192,8 @@
       const li = node("li");
       li.append(p.id ? articleLink(p) : node("span", p.title));
       li.append(document.createTextNode(`（${p.date || "发表日期未知"}${p.time ? " " + p.time : ""}） `));
-      if (p.source_url) li.append(external(p.source_url, "快照题录证据"));
+      if (p.source_url) li.append(external(p.source_url, p.id ? "查看首页快照" : "快照题录证据"));
+      if (key === "partial_preview" && p.source_urls?.length) li.append(external(p.source_urls[0], "查看首页快照"));
       if (p.original_url) {
         li.append(document.createTextNode(" · "));
         li.append(external(p.original_url, "原始博文URL"));

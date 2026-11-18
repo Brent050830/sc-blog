@@ -14,10 +14,27 @@
   })[char]);
 
   const articleUrl = (post) => `article.html?id=${encodeURIComponent(post.id)}`;
-  const postImages = (post) => Array.isArray(post.images) ? post.images : [];
+  const recoveryState = post => window.RECOVERY_STATUS?.posts[post.id];
+  const postImages = post => {
+    const status = recoveryState(post);
+    return (post.images || []).filter(image => !status?.display_duplicates?.[image.path] &&
+      !status?.source_placeholders?.some(item => item.path === image.path));
+  };
   const waybackLabel = (post) => post.wayback?.new_article ? "Wayback 补入" : post.wayback?.status === "verified" ? "Wayback 已核验" : "Wayback 部分恢复";
   const waybackBadge = (post) => post.wayback ? `<span class="wayback-badge">${waybackLabel(post)}</span>` : "";
-  const recoveryBadges = (post) => `${waybackBadge(post)}${post.supplemental?.new_article && post.supplemental.platform === "sohu" ? '<span class="supplemental-badge">搜狐博客补遗</span>' : ""}${post.supplemental?.new_article && !post.supplemental.complete ? '<span class="preview-badge">首页预览 · 不完整</span>' : ""}`;
+  const recoveryLabel = post => {
+    switch (recoveryState(post)?.text_status) {
+      case "completeness-unverified": return "原篇完整性待核";
+      case "partial-preview": return "首页预览 · 不完整";
+      case "aliased-merged": return "同文异名 · 全文另存";
+      default: return "";
+    }
+  };
+  const recoveryBadges = (post, includeStatus = true) => {
+    const label = includeStatus ? recoveryLabel(post) : "";
+    const sohu = post.supplemental?.new_article && post.supplemental.platform === "sohu";
+    return `${waybackBadge(post)}${sohu ? '<span class="supplemental-badge">搜狐博客补遗</span>' : ""}${label ? `<span class="preview-badge">${label}</span>` : ""}`;
+  };
   const postStatus = (post) => {
     const imageCount = postImages(post).length;
     if (post.kind === "image-only") return imageCount ? `${imageCount} 张图片` : "原图待恢复";
@@ -191,14 +208,20 @@
     render();
   }
 
-  function renderImage(image, index, total) {
+  function renderImage(image, index, total, post) {
       const positionNote = image.placement === "inline" ? " · 按历史正文位置近似还原" : image.placement === "inline-unresolved" ? " · 原位置无法精确映射，按正文后附图" : "";
-      const source = image.path.startsWith("assets/images/supplemental/") || image.path.startsWith("assets/images/recovered/") ? image.source : image.source_page.includes("web.archive.org/") ? "Wayback 历史页面" : "seeyou.life 镜像";
+      const source = image.source || (image.source_page.includes("web.archive.org/") ? "Wayback 历史页面" : "seeyou.life 镜像");
+      const status = recoveryState(post);
+      const pending = status?.identity_pending_image_paths?.includes(image.path) ? " · 对应新浪早期原图身份待核" : "";
+      const provenance = [...(post.images || []), ...(status?.newly_recovered_images || []), ...(status?.historical_version_images || [])];
+      const copies = [image.upgraded_from, ...provenance.filter(item =>
+        status?.display_duplicates?.[item.path] === image.path)].filter(Boolean);
+      const alternateLinks = copies.map(copy => `<a href="${escapeHtml(copy.source_page)}" target="_blank" rel="noopener noreferrer">${escapeHtml(copy.source || "快照")}（同画面版本）</a>`).join(" · ");
       return `<figure class="archive-image" data-placement="${escapeHtml(image.placement)}">
         <a class="archive-image-link" href="${escapeHtml(image.path)}" target="_blank" rel="noopener">
           <img src="${escapeHtml(image.path)}" alt="${escapeHtml(image.alt)}"${image.width && image.height ? ` width="${Number(image.width)}" height="${Number(image.height)}"` : ""} loading="lazy" decoding="async">
         </a>
-        <figcaption><span>存档配图 ${index + 1}/${total}${positionNote}</span><a href="${escapeHtml(image.source_page)}" target="_blank" rel="noopener noreferrer">来源：${escapeHtml(source)}</a></figcaption>
+        <figcaption><span>${image.caption ? escapeHtml(image.caption) : `存档配图 ${index + 1}/${total}${positionNote}${pending}`}</span><a href="${escapeHtml(image.source_page)}" target="_blank" rel="noopener noreferrer">来源：${escapeHtml(source)}</a>${alternateLinks ? `<small>${alternateLinks}</small>` : ""}</figcaption>
       </figure>`;
   }
 
@@ -217,11 +240,18 @@
         const target = Math.max(0, Math.min(1, image.body_position_ratio)) * positions.at(-1);
         slot = positions.reduce((best, value, current) => Math.abs(value - target) < Math.abs(positions[best] - target) ? current : best, 0);
       }
-      slots[slot].push(renderImage(image, index, images.length));
+      slots[slot].push(renderImage(image, index, images.length, post));
     });
+    const status = recoveryState(post);
+    const captioned = status?.newly_recovered_images.filter(image => image.caption && !status.display_duplicates?.[image.path]) || [];
     let markedReplies = false;
     const text = blocks.map((block, index) => {
       const trimmed = block.trim();
+      const captionIndex = captioned.findIndex(image => image.caption === trimmed);
+      if (captionIndex !== -1) {
+        const image = { ...captioned[captionIndex], placement: "inline" };
+        return slots[index].join("") + renderImage(image, captionIndex, captioned.length, post);
+      }
       const content = escapeHtml(trimmed).replace(/\n/g, "<br>");
       const isQuote = /^\[(?:匿名|新浪网友|网友)|^【|^“.*”$/.test(trimmed);
       const replyAnchor = isQuote && !markedReplies && post.wayback?.comments?.author_reply_confirmed;
@@ -237,10 +267,11 @@
     if (!recovery || !element) return;
     const timestamp = recovery.snapshot_timestamp;
     const date = formatSnapshotTime(timestamp);
-    const fields = [recovery.body_from_wayback ? "正文由历史快照补入" : "标题、日期与本地原文已交叉核验"];
+    const completenessPending = recoveryState(post)?.text_status === "completeness-unverified";
+    const fields = [completenessPending ? "首页快照保留三张照片，原篇完整性待核" : recovery.body_from_wayback ? "正文由历史快照补入" : "标题、日期与本地原文已交叉核验"];
     if (recovery.recovered_image_count) fields.push(`恢复 ${recovery.recovered_image_count} 张正文图片`);
     if (recovery.missing_image_count) fields.push(`${recovery.missing_image_count} 个原图引用仍失效`);
-    if (recovery.body_note) fields.push(recovery.body_note.replace(/。$/, ""));
+    if (recovery.body_note && !completenessPending) fields.push(recovery.body_note.replace(/。$/, ""));
     const comments = recovery.comments;
     const commentText = comments ? `正文保留博主整理的 ${comments.comment_excerpts} 条历史评论摘录${comments.author_reply_confirmed ? "，含舒畅本人回应" : ""}。这些摘录由作者写入正文。` : "";
     const dynamicText = post.supplemental?.historical_comments ? "另已从独立评论页恢复部分留言，见下方历史网友评论；不代表完整评论区。" : recovery.dynamic_comments === "placeholder-only" ? "快照中的动态评论区仅有加载占位，尚未恢复评论列表。" : "本页快照未保存可读取的独立评论列表。";
@@ -302,19 +333,24 @@
     setText("crumb-title", post.title);
     setText("article-date", `${formatChineseDate(post.date)} · ${post.time.slice(0, 5)}`);
     const imageCount = postImages(post).length;
-    setText("article-status", post.supplemental?.new_article && !post.supplemental.complete ? "首页预览 · 不完整" : post.supplemental?.new_article && post.supplemental.platform === "sohu" ? "搜狐博客原文" : post.kind === "image-only"
-      ? (imageCount ? "原图已恢复" : "原图待恢复")
-      : `${post.wayback?.body_from_wayback ? "快照原文" : "本地原文"}${imageCount ? ` · ${imageCount} 张配图` : ""}`);
-    document.getElementById("article-status").insertAdjacentHTML("afterend", recoveryBadges(post));
+    const textStatus = recoveryState(post)?.text_status;
+    const pendingImages = recoveryState(post)?.identity_pending_image_paths?.length;
+    const completenessPending = textStatus === "completeness-unverified";
+    const partialPreview = textStatus === "partial-preview";
+    setText("article-status", recoveryLabel(post) || (post.supplemental?.new_article && post.supplemental.platform === "sohu" ? "搜狐博客原文" : post.kind === "image-only"
+      ? (pendingImages ? "部分配图原图身份待核" : imageCount ? "已保存配图" : "原图待恢复")
+      : `${post.wayback?.body_from_wayback ? "快照原文" : "本地原文"}${imageCount ? ` · ${imageCount} 张配图` : ""}`));
+    document.getElementById("article-status").insertAdjacentHTML("afterend", recoveryBadges(post, false));
     setText("article-title", post.title);
-    setText("article-lede", post.supplemental?.new_article && !post.supplemental.complete ? "这是历史首页保留的部分预览，完整正文或全部图片尚未恢复。" : post.kind === "image-only"
+    setText("article-lede", completenessPending ? "已保存新浪首页快照可见的三张照片，原篇是否还有内容仍待核。" :
+      partialPreview ? "这是历史首页保留的部分预览，完整正文或全部图片尚未恢复。" : post.kind === "image-only"
       ? (imageCount ? "图片已由可核实的历史页面恢复，并在本站保存。" : "原导出文件未保留图片内容。")
       : (post.excerpt.length < post.text.length ? `${post.excerpt}…` : post.excerpt));
     document.getElementById("article-body").innerHTML = makeBody(post);
     renderWaybackEvidence(post);
     renderSupplemental(post);
     renderSidebarComments(post);
-    const origin = post.supplemental?.new_article && post.supplemental.platform === "sohu" ? "本条目来自舒畅搜狐博客的 RSS 历史快照；不是已核实的新浪转载。" : post.supplemental?.new_article && !post.supplemental.complete ? "本条目仅保留新浪首页快照中的预览，完整原页尚未恢复。" : post.wayback?.body_from_wayback ? "本条目的标题、日期与正文来自已核实的 Wayback 历史快照。" : post.kind === "image-only" ? `条目来自《${post.source_detail}》；导出文件只保留标题、日期和时间。` : `正文来自《${post.source_detail}》GBK 导出备份，仅整理换行，未改写原文。`;
+    const origin = post.supplemental?.new_article && post.supplemental.platform === "sohu" ? "本条目来自舒畅搜狐博客的 RSS 历史快照；不是已核实的新浪转载。" : completenessPending ? "本条目来自新浪首页快照，原篇完整性待核。" : partialPreview ? "本条目仅保留新浪首页快照中的预览，完整原页尚未恢复。" : pendingImages ? "本篇保留新浪文章快照及搜狐同篇配图，各图来源见题注。" : post.wayback?.body_from_wayback ? "本条目的标题、日期与正文来自已核实的 Wayback 历史快照。" : post.kind === "image-only" ? `条目来自《${post.source_detail}》；导出文件只保留标题、日期和时间。` : `正文来自《${post.source_detail}》GBK 导出备份，仅整理换行，未改写原文。`;
     setText("source-note-text", `${origin}${imageCount ? ` ${imageCount} 张配图由各图下方标注的历史页面核实，已下载到本站保存。` : post.kind === "image-only" ? " 原图尚待恢复。" : ""}`);
     setText("article-number", `#${String(post.n || post.sequence).padStart(3, "0")}`);
     setText("article-position", `全文第 ${post.sequence} 条 · ${post.date.slice(0, 4)} 年存档`);
